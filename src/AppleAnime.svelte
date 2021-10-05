@@ -6,6 +6,7 @@
 	const height = document.documentElement.clientHeight;
 	const canvasId = 'scroll-player';
 	const imagesLength = 176; // 图片总数量
+	let flag = false;
 	let boxHeight;
 
 	/**
@@ -35,6 +36,7 @@
 				if (imagesManager.length === imagesLength) {
 					// 代表所有图片加载完成 执行回调方法
 					imagesLoadComplete();
+					flag = true;
 				}
 			}
 
@@ -122,15 +124,19 @@
 </script>
 
 <main>
-	<div class="scroll-player-container" > 
-		<div class="scroll-sequence" >
-			<div class="image-sequence" >
-				<div class="canvas-container" >
-					<canvas id={canvasId} {width} {height} style="background-color: #000;" ></canvas>
+	
+		<div style="visibility: {flag ? 'visible' : 'hidden' };" class="scroll-player-container" > 
+			<div class="scroll-sequence" >
+				<div class="image-sequence" >
+					<div class="canvas-container" >
+						<canvas id={canvasId} {width} {height} style="background-color: #000;" ></canvas>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+		
+		<h1 class="loading" style="visibility: {flag ? 'hidden' : 'visible' };" >加载中</h1>
+
 </main>
 
 <style>
@@ -157,6 +163,13 @@
   position: relative;
   width: 100%;
   height: 100vh;
+}
+
+.loading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 </style>

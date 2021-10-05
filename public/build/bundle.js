@@ -1,10 +1,1731 @@
-var app=function(){"use strict";function e(){}function t(e){return e()}function n(){return Object.create(null)}function r(e){e.forEach(t)}function o(e){return"function"==typeof e}function i(e,t){return e!=e?t==t:e!==t||e&&"object"==typeof e||"function"==typeof e}function a(e,t){e.appendChild(t)}function l(e,t,n){e.insertBefore(t,n||null)}function u(e){e.parentNode.removeChild(e)}function c(e){return document.createElement(e)}function s(e,t,n){null==n?e.removeAttribute(t):e.getAttribute(t)!==n&&e.setAttribute(t,n)}let f;function m(e){f=e}const d=[],h=[],p=[],b=[],g=Promise.resolve();let v=!1;function _(e){p.push(e)}let y=!1;const $=new Set;function w(){if(!y){y=!0;do{for(let e=0;e<d.length;e+=1){const t=d[e];m(t),x(t.$$)}for(m(null),d.length=0;h.length;)h.pop()();for(let e=0;e<p.length;e+=1){const t=p[e];$.has(t)||($.add(t),t())}p.length=0}while(d.length);for(;b.length;)b.pop()();v=!1,y=!1,$.clear()}}function x(e){if(null!==e.fragment){e.update(),r(e.before_update);const t=e.dirty;e.dirty=[-1],e.fragment&&e.fragment.p(e.ctx,t),e.after_update.forEach(_)}}const F=new Set;function B(e,t){e&&e.i&&(F.delete(e),e.i(t))}function N(e,n,i,a){const{fragment:l,on_mount:u,on_destroy:c,after_update:s}=e.$$;l&&l.m(n,i),a||_((()=>{const n=u.map(t).filter(o);c?c.push(...n):r(n),e.$$.on_mount=[]})),s.forEach(_)}function M(e,t){const n=e.$$;null!==n.fragment&&(r(n.on_destroy),n.fragment&&n.fragment.d(t),n.on_destroy=n.fragment=null,n.ctx=[])}function E(e,t){-1===e.$$.dirty[0]&&(d.push(e),v||(v=!0,g.then(w)),e.$$.dirty.fill(0)),e.$$.dirty[t/31|0]|=1<<t%31}function T(t,o,i,a,l,c,s,d=[-1]){const h=f;m(t);const p=t.$$={fragment:null,ctx:null,props:c,update:e,not_equal:l,bound:n(),on_mount:[],on_destroy:[],on_disconnect:[],before_update:[],after_update:[],context:new Map(o.context||(h?h.$$.context:[])),callbacks:n(),dirty:d,skip_bound:!1,root:o.target||h.$$.root};s&&s(p.root);let b=!1;if(p.ctx=i?i(t,o.props||{},((e,n,...r)=>{const o=r.length?r[0]:n;return p.ctx&&l(p.ctx[e],p.ctx[e]=o)&&(!p.skip_bound&&p.bound[e]&&p.bound[e](o),b&&E(t,e)),n})):[],p.update(),b=!0,r(p.before_update),p.fragment=!!a&&a(p.ctx),o.target){if(o.hydrate){const e=function(e){return Array.from(e.childNodes)}(o.target);p.fragment&&p.fragment.l(e),e.forEach(u)}else p.fragment&&p.fragment.c();o.intro&&B(t.$$.fragment),N(t,o.target,o.anchor,o.customElement),w()}m(h)}class k{$destroy(){M(this,1),this.$destroy=e}$on(e,t){const n=this.$$.callbacks[e]||(this.$$.callbacks[e]=[]);return n.push(t),()=>{const e=n.indexOf(t);-1!==e&&n.splice(e,1)}}$set(e){var t;this.$$set&&(t=e,0!==Object.keys(t).length)&&(this.$$.skip_bound=!0,this.$$set(e),this.$$.skip_bound=!1)}}var P="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:{};
-/*! @preserve
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
+var app = (function () {
+    'use strict';
+
+    function noop() { }
+    function add_location(element, file, line, column, char) {
+        element.__svelte_meta = {
+            loc: { file, line, column, char }
+        };
+    }
+    function run(fn) {
+        return fn();
+    }
+    function blank_object() {
+        return Object.create(null);
+    }
+    function run_all(fns) {
+        fns.forEach(run);
+    }
+    function is_function(thing) {
+        return typeof thing === 'function';
+    }
+    function safe_not_equal(a, b) {
+        return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+    }
+    function is_empty(obj) {
+        return Object.keys(obj).length === 0;
+    }
+    function append(target, node) {
+        target.appendChild(node);
+    }
+    function insert(target, node, anchor) {
+        target.insertBefore(node, anchor || null);
+    }
+    function detach(node) {
+        node.parentNode.removeChild(node);
+    }
+    function element(name) {
+        return document.createElement(name);
+    }
+    function text(data) {
+        return document.createTextNode(data);
+    }
+    function space() {
+        return text(' ');
+    }
+    function attr(node, attribute, value) {
+        if (value == null)
+            node.removeAttribute(attribute);
+        else if (node.getAttribute(attribute) !== value)
+            node.setAttribute(attribute, value);
+    }
+    function children(element) {
+        return Array.from(element.childNodes);
+    }
+    function set_style(node, key, value, important) {
+        node.style.setProperty(key, value, important ? 'important' : '');
+    }
+    function custom_event(type, detail, bubbles = false) {
+        const e = document.createEvent('CustomEvent');
+        e.initCustomEvent(type, bubbles, false, detail);
+        return e;
+    }
+
+    let current_component;
+    function set_current_component(component) {
+        current_component = component;
+    }
+
+    const dirty_components = [];
+    const binding_callbacks = [];
+    const render_callbacks = [];
+    const flush_callbacks = [];
+    const resolved_promise = Promise.resolve();
+    let update_scheduled = false;
+    function schedule_update() {
+        if (!update_scheduled) {
+            update_scheduled = true;
+            resolved_promise.then(flush);
+        }
+    }
+    function add_render_callback(fn) {
+        render_callbacks.push(fn);
+    }
+    let flushing = false;
+    const seen_callbacks = new Set();
+    function flush() {
+        if (flushing)
+            return;
+        flushing = true;
+        do {
+            // first, call beforeUpdate functions
+            // and update components
+            for (let i = 0; i < dirty_components.length; i += 1) {
+                const component = dirty_components[i];
+                set_current_component(component);
+                update(component.$$);
+            }
+            set_current_component(null);
+            dirty_components.length = 0;
+            while (binding_callbacks.length)
+                binding_callbacks.pop()();
+            // then, once components are updated, call
+            // afterUpdate functions. This may cause
+            // subsequent updates...
+            for (let i = 0; i < render_callbacks.length; i += 1) {
+                const callback = render_callbacks[i];
+                if (!seen_callbacks.has(callback)) {
+                    // ...so guard against infinite loops
+                    seen_callbacks.add(callback);
+                    callback();
+                }
+            }
+            render_callbacks.length = 0;
+        } while (dirty_components.length);
+        while (flush_callbacks.length) {
+            flush_callbacks.pop()();
+        }
+        update_scheduled = false;
+        flushing = false;
+        seen_callbacks.clear();
+    }
+    function update($$) {
+        if ($$.fragment !== null) {
+            $$.update();
+            run_all($$.before_update);
+            const dirty = $$.dirty;
+            $$.dirty = [-1];
+            $$.fragment && $$.fragment.p($$.ctx, dirty);
+            $$.after_update.forEach(add_render_callback);
+        }
+    }
+    const outroing = new Set();
+    let outros;
+    function transition_in(block, local) {
+        if (block && block.i) {
+            outroing.delete(block);
+            block.i(local);
+        }
+    }
+    function transition_out(block, local, detach, callback) {
+        if (block && block.o) {
+            if (outroing.has(block))
+                return;
+            outroing.add(block);
+            outros.c.push(() => {
+                outroing.delete(block);
+                if (callback) {
+                    if (detach)
+                        block.d(1);
+                    callback();
+                }
+            });
+            block.o(local);
+        }
+    }
+
+    const globals = (typeof window !== 'undefined'
+        ? window
+        : typeof globalThis !== 'undefined'
+            ? globalThis
+            : global);
+    function create_component(block) {
+        block && block.c();
+    }
+    function mount_component(component, target, anchor, customElement) {
+        const { fragment, on_mount, on_destroy, after_update } = component.$$;
+        fragment && fragment.m(target, anchor);
+        if (!customElement) {
+            // onMount happens before the initial afterUpdate
+            add_render_callback(() => {
+                const new_on_destroy = on_mount.map(run).filter(is_function);
+                if (on_destroy) {
+                    on_destroy.push(...new_on_destroy);
+                }
+                else {
+                    // Edge case - component was destroyed immediately,
+                    // most likely as a result of a binding initialising
+                    run_all(new_on_destroy);
+                }
+                component.$$.on_mount = [];
+            });
+        }
+        after_update.forEach(add_render_callback);
+    }
+    function destroy_component(component, detaching) {
+        const $$ = component.$$;
+        if ($$.fragment !== null) {
+            run_all($$.on_destroy);
+            $$.fragment && $$.fragment.d(detaching);
+            // TODO null out other refs, including component.$$ (but need to
+            // preserve final state?)
+            $$.on_destroy = $$.fragment = null;
+            $$.ctx = [];
+        }
+    }
+    function make_dirty(component, i) {
+        if (component.$$.dirty[0] === -1) {
+            dirty_components.push(component);
+            schedule_update();
+            component.$$.dirty.fill(0);
+        }
+        component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
+    }
+    function init(component, options, instance, create_fragment, not_equal, props, append_styles, dirty = [-1]) {
+        const parent_component = current_component;
+        set_current_component(component);
+        const $$ = component.$$ = {
+            fragment: null,
+            ctx: null,
+            // state
+            props,
+            update: noop,
+            not_equal,
+            bound: blank_object(),
+            // lifecycle
+            on_mount: [],
+            on_destroy: [],
+            on_disconnect: [],
+            before_update: [],
+            after_update: [],
+            context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
+            // everything else
+            callbacks: blank_object(),
+            dirty,
+            skip_bound: false,
+            root: options.target || parent_component.$$.root
+        };
+        append_styles && append_styles($$.root);
+        let ready = false;
+        $$.ctx = instance
+            ? instance(component, options.props || {}, (i, ret, ...rest) => {
+                const value = rest.length ? rest[0] : ret;
+                if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
+                    if (!$$.skip_bound && $$.bound[i])
+                        $$.bound[i](value);
+                    if (ready)
+                        make_dirty(component, i);
+                }
+                return ret;
+            })
+            : [];
+        $$.update();
+        ready = true;
+        run_all($$.before_update);
+        // `false` as a special case of no DOM component
+        $$.fragment = create_fragment ? create_fragment($$.ctx) : false;
+        if (options.target) {
+            if (options.hydrate) {
+                const nodes = children(options.target);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                $$.fragment && $$.fragment.l(nodes);
+                nodes.forEach(detach);
+            }
+            else {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                $$.fragment && $$.fragment.c();
+            }
+            if (options.intro)
+                transition_in(component.$$.fragment);
+            mount_component(component, options.target, options.anchor, options.customElement);
+            flush();
+        }
+        set_current_component(parent_component);
+    }
+    /**
+     * Base class for Svelte components. Used when dev=false.
+     */
+    class SvelteComponent {
+        $destroy() {
+            destroy_component(this, 1);
+            this.$destroy = noop;
+        }
+        $on(type, callback) {
+            const callbacks = (this.$$.callbacks[type] || (this.$$.callbacks[type] = []));
+            callbacks.push(callback);
+            return () => {
+                const index = callbacks.indexOf(callback);
+                if (index !== -1)
+                    callbacks.splice(index, 1);
+            };
+        }
+        $set($$props) {
+            if (this.$$set && !is_empty($$props)) {
+                this.$$.skip_bound = true;
+                this.$$set($$props);
+                this.$$.skip_bound = false;
+            }
+        }
+    }
+
+    function dispatch_dev(type, detail) {
+        document.dispatchEvent(custom_event(type, Object.assign({ version: '3.43.1' }, detail), true));
+    }
+    function append_dev(target, node) {
+        dispatch_dev('SvelteDOMInsert', { target, node });
+        append(target, node);
+    }
+    function insert_dev(target, node, anchor) {
+        dispatch_dev('SvelteDOMInsert', { target, node, anchor });
+        insert(target, node, anchor);
+    }
+    function detach_dev(node) {
+        dispatch_dev('SvelteDOMRemove', { node });
+        detach(node);
+    }
+    function attr_dev(node, attribute, value) {
+        attr(node, attribute, value);
+        if (value == null)
+            dispatch_dev('SvelteDOMRemoveAttribute', { node, attribute });
+        else
+            dispatch_dev('SvelteDOMSetAttribute', { node, attribute, value });
+    }
+    function validate_slots(name, slot, keys) {
+        for (const slot_key of Object.keys(slot)) {
+            if (!~keys.indexOf(slot_key)) {
+                console.warn(`<${name}> received an unexpected slot "${slot_key}".`);
+            }
+        }
+    }
+    /**
+     * Base class for Svelte components with some minor dev-enhancements. Used when dev=true.
+     */
+    class SvelteComponentDev extends SvelteComponent {
+        constructor(options) {
+            if (!options || (!options.target && !options.$$inline)) {
+                throw new Error("'target' is a required option");
+            }
+            super();
+        }
+        $destroy() {
+            super.$destroy();
+            this.$destroy = () => {
+                console.warn('Component was already destroyed'); // eslint-disable-line no-console
+            };
+        }
+        $capture_state() { }
+        $inject_state() { }
+    }
+
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function createCommonjsModule(fn) {
+      var module = { exports: {} };
+    	return fn(module, module.exports), module.exports;
+    }
+
+    /*! @preserve
      * numeral.js
      * version : 2.0.6
      * author : Adam Draper
      * license : MIT
      * http://adamwdraper.github.com/Numeral-js/
      */
-var S,L,z=(S=function(e){!function(t,n){e.exports?e.exports=n():t.numeral=n()}(P,(function(){var e,t,n,r,o,i={},a={},l={currentLocale:"en",zeroFormat:null,nullFormat:null,defaultFormat:"0,0",scalePercentBy100:!0},u={currentLocale:l.currentLocale,zeroFormat:l.zeroFormat,nullFormat:l.nullFormat,defaultFormat:l.defaultFormat,scalePercentBy100:l.scalePercentBy100};function c(e,t){this._input=e,this._value=t}return(e=function(n){var r,o,a,l;if(e.isNumeral(n))r=n.value();else if(0===n||void 0===n)r=0;else if(null===n||t.isNaN(n))r=null;else if("string"==typeof n)if(u.zeroFormat&&n===u.zeroFormat)r=0;else if(u.nullFormat&&n===u.nullFormat||!n.replace(/[^0-9]+/g,"").length)r=null;else{for(o in i)if((l="function"==typeof i[o].regexps.unformat?i[o].regexps.unformat():i[o].regexps.unformat)&&n.match(l)){a=i[o].unformat;break}r=(a=a||e._.stringToNumber)(n)}else r=Number(n)||null;return new c(n,r)}).version="2.0.6",e.isNumeral=function(e){return e instanceof c},e._=t={numberToFormat:function(t,n,r){var o,i,l,u,c,s,f,m,d=a[e.options.currentLocale],h=!1,p=!1,b="",g=1e12,v=1e9,_=1e6,y="",$=!1;if(t=t||0,l=Math.abs(t),e._.includes(n,"(")?(h=!0,n=n.replace(/[\(|\)]/g,"")):(e._.includes(n,"+")||e._.includes(n,"-"))&&(s=e._.includes(n,"+")?n.indexOf("+"):t<0?n.indexOf("-"):-1,n=n.replace(/[\+|\-]/g,"")),e._.includes(n,"a")&&(i=!!(i=n.match(/a(k|m|b|t)?/))&&i[1],e._.includes(n," a")&&(b=" "),n=n.replace(new RegExp(b+"a[kmbt]?"),""),l>=g&&!i||"t"===i?(b+=d.abbreviations.trillion,t/=g):l<g&&l>=v&&!i||"b"===i?(b+=d.abbreviations.billion,t/=v):l<v&&l>=_&&!i||"m"===i?(b+=d.abbreviations.million,t/=_):(l<_&&l>=1e3&&!i||"k"===i)&&(b+=d.abbreviations.thousand,t/=1e3)),e._.includes(n,"[.]")&&(p=!0,n=n.replace("[.]",".")),u=t.toString().split(".")[0],c=n.split(".")[1],f=n.indexOf(","),o=(n.split(".")[0].split(",")[0].match(/0/g)||[]).length,c?(e._.includes(c,"[")?(c=(c=c.replace("]","")).split("["),y=e._.toFixed(t,c[0].length+c[1].length,r,c[1].length)):y=e._.toFixed(t,c.length,r),u=y.split(".")[0],y=e._.includes(y,".")?d.delimiters.decimal+y.split(".")[1]:"",p&&0===Number(y.slice(1))&&(y="")):u=e._.toFixed(t,0,r),b&&!i&&Number(u)>=1e3&&b!==d.abbreviations.trillion)switch(u=String(Number(u)/1e3),b){case d.abbreviations.thousand:b=d.abbreviations.million;break;case d.abbreviations.million:b=d.abbreviations.billion;break;case d.abbreviations.billion:b=d.abbreviations.trillion}if(e._.includes(u,"-")&&(u=u.slice(1),$=!0),u.length<o)for(var w=o-u.length;w>0;w--)u="0"+u;return f>-1&&(u=u.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1"+d.delimiters.thousands)),0===n.indexOf(".")&&(u=""),m=u+y+(b||""),h?m=(h&&$?"(":"")+m+(h&&$?")":""):s>=0?m=0===s?($?"-":"+")+m:m+($?"-":"+"):$&&(m="-"+m),m},stringToNumber:function(e){var t,n,r,o=a[u.currentLocale],i=e,l={thousand:3,million:6,billion:9,trillion:12};if(u.zeroFormat&&e===u.zeroFormat)n=0;else if(u.nullFormat&&e===u.nullFormat||!e.replace(/[^0-9]+/g,"").length)n=null;else{for(t in n=1,"."!==o.delimiters.decimal&&(e=e.replace(/\./g,"").replace(o.delimiters.decimal,".")),l)if(r=new RegExp("[^a-zA-Z]"+o.abbreviations[t]+"(?:\\)|(\\"+o.currency.symbol+")?(?:\\))?)?$"),i.match(r)){n*=Math.pow(10,l[t]);break}n*=(e.split("-").length+Math.min(e.split("(").length-1,e.split(")").length-1))%2?1:-1,e=e.replace(/[^0-9\.]+/g,""),n*=Number(e)}return n},isNaN:function(e){return"number"==typeof e&&isNaN(e)},includes:function(e,t){return-1!==e.indexOf(t)},insert:function(e,t,n){return e.slice(0,n)+t+e.slice(n)},reduce:function(e,t){if(null===this)throw new TypeError("Array.prototype.reduce called on null or undefined");if("function"!=typeof t)throw new TypeError(t+" is not a function");var n,r=Object(e),o=r.length>>>0,i=0;if(3===arguments.length)n=arguments[2];else{for(;i<o&&!(i in r);)i++;if(i>=o)throw new TypeError("Reduce of empty array with no initial value");n=r[i++]}for(;i<o;i++)i in r&&(n=t(n,r[i],i,r));return n},multiplier:function(e){var t=e.toString().split(".");return t.length<2?1:Math.pow(10,t[1].length)},correctionFactor:function(){var e=Array.prototype.slice.call(arguments);return e.reduce((function(e,n){var r=t.multiplier(n);return e>r?e:r}),1)},toFixed:function(e,t,n,r){var o,i,a,l,u=e.toString().split("."),c=t-(r||0);return o=2===u.length?Math.min(Math.max(u[1].length,c),t):c,a=Math.pow(10,o),l=(n(e+"e+"+o)/a).toFixed(o),r>t-o&&(i=new RegExp("\\.?0{1,"+(r-(t-o))+"}$"),l=l.replace(i,"")),l}},e.options=u,e.formats=i,e.locales=a,e.locale=function(e){return e&&(u.currentLocale=e.toLowerCase()),u.currentLocale},e.localeData=function(e){if(!e)return a[u.currentLocale];if(e=e.toLowerCase(),!a[e])throw new Error("Unknown locale : "+e);return a[e]},e.reset=function(){for(var e in l)u[e]=l[e]},e.zeroFormat=function(e){u.zeroFormat="string"==typeof e?e:null},e.nullFormat=function(e){u.nullFormat="string"==typeof e?e:null},e.defaultFormat=function(e){u.defaultFormat="string"==typeof e?e:"0.0"},e.register=function(e,t,n){if(t=t.toLowerCase(),this[e+"s"][t])throw new TypeError(t+" "+e+" already registered.");return this[e+"s"][t]=n,n},e.validate=function(t,n){var r,o,i,a,l,u,c,s;if("string"!=typeof t&&(t+="",console.warn&&console.warn("Numeral.js: Value is not string. It has been co-erced to: ",t)),(t=t.trim()).match(/^\d+$/))return!0;if(""===t)return!1;try{c=e.localeData(n)}catch(t){c=e.localeData(e.locale())}return i=c.currency.symbol,l=c.abbreviations,r=c.delimiters.decimal,o="."===c.delimiters.thousands?"\\.":c.delimiters.thousands,!(null!==(s=t.match(/^[^\d]+/))&&(t=t.substr(1),s[0]!==i)||null!==(s=t.match(/[^\d]+$/))&&(t=t.slice(0,-1),s[0]!==l.thousand&&s[0]!==l.million&&s[0]!==l.billion&&s[0]!==l.trillion)||(u=new RegExp(o+"{2}"),t.match(/[^\d.,]/g)||(a=t.split(r)).length>2||(a.length<2?!a[0].match(/^\d+.*\d$/)||a[0].match(u):1===a[0].length?!a[0].match(/^\d+$/)||a[0].match(u)||!a[1].match(/^\d+$/):!a[0].match(/^\d+.*\d$/)||a[0].match(u)||!a[1].match(/^\d+$/))))},e.fn=c.prototype={clone:function(){return e(this)},format:function(t,n){var r,o,a,l=this._value,c=t||u.defaultFormat;if(n=n||Math.round,0===l&&null!==u.zeroFormat)o=u.zeroFormat;else if(null===l&&null!==u.nullFormat)o=u.nullFormat;else{for(r in i)if(c.match(i[r].regexps.format)){a=i[r].format;break}o=(a=a||e._.numberToFormat)(l,c,n)}return o},value:function(){return this._value},input:function(){return this._input},set:function(e){return this._value=Number(e),this},add:function(e){var n=t.correctionFactor.call(null,this._value,e);return this._value=t.reduce([this._value,e],(function(e,t,r,o){return e+Math.round(n*t)}),0)/n,this},subtract:function(e){var n=t.correctionFactor.call(null,this._value,e);return this._value=t.reduce([e],(function(e,t,r,o){return e-Math.round(n*t)}),Math.round(this._value*n))/n,this},multiply:function(e){return this._value=t.reduce([this._value,e],(function(e,n,r,o){var i=t.correctionFactor(e,n);return Math.round(e*i)*Math.round(n*i)/Math.round(i*i)}),1),this},divide:function(e){return this._value=t.reduce([this._value,e],(function(e,n,r,o){var i=t.correctionFactor(e,n);return Math.round(e*i)/Math.round(n*i)})),this},difference:function(t){return Math.abs(e(this._value).subtract(t).value())}},e.register("locale","en",{delimiters:{thousands:",",decimal:"."},abbreviations:{thousand:"k",million:"m",billion:"b",trillion:"t"},ordinal:function(e){var t=e%10;return 1==~~(e%100/10)?"th":1===t?"st":2===t?"nd":3===t?"rd":"th"},currency:{symbol:"$"}}),e.register("format","bps",{regexps:{format:/(BPS)/,unformat:/(BPS)/},format:function(t,n,r){var o,i=e._.includes(n," BPS")?" ":"";return t*=1e4,n=n.replace(/\s?BPS/,""),o=e._.numberToFormat(t,n,r),e._.includes(o,")")?((o=o.split("")).splice(-1,0,i+"BPS"),o=o.join("")):o=o+i+"BPS",o},unformat:function(t){return+(1e-4*e._.stringToNumber(t)).toFixed(15)}}),r={base:1024,suffixes:["B","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"]},o="("+(o=(n={base:1e3,suffixes:["B","KB","MB","GB","TB","PB","EB","ZB","YB"]}).suffixes.concat(r.suffixes.filter((function(e){return n.suffixes.indexOf(e)<0}))).join("|")).replace("B","B(?!PS)")+")",e.register("format","bytes",{regexps:{format:/([0\s]i?b)/,unformat:new RegExp(o)},format:function(t,o,i){var a,l,u,c=e._.includes(o,"ib")?r:n,s=e._.includes(o," b")||e._.includes(o," ib")?" ":"";for(o=o.replace(/\s?i?b/,""),a=0;a<=c.suffixes.length;a++)if(l=Math.pow(c.base,a),u=Math.pow(c.base,a+1),null===t||0===t||t>=l&&t<u){s+=c.suffixes[a],l>0&&(t/=l);break}return e._.numberToFormat(t,o,i)+s},unformat:function(t){var o,i,a=e._.stringToNumber(t);if(a){for(o=n.suffixes.length-1;o>=0;o--){if(e._.includes(t,n.suffixes[o])){i=Math.pow(n.base,o);break}if(e._.includes(t,r.suffixes[o])){i=Math.pow(r.base,o);break}}a*=i||1}return a}}),e.register("format","currency",{regexps:{format:/(\$)/},format:function(t,n,r){var o,i,a=e.locales[e.options.currentLocale],l={before:n.match(/^([\+|\-|\(|\s|\$]*)/)[0],after:n.match(/([\+|\-|\)|\s|\$]*)$/)[0]};for(n=n.replace(/\s?\$\s?/,""),o=e._.numberToFormat(t,n,r),t>=0?(l.before=l.before.replace(/[\-\(]/,""),l.after=l.after.replace(/[\-\)]/,"")):t<0&&!e._.includes(l.before,"-")&&!e._.includes(l.before,"(")&&(l.before="-"+l.before),i=0;i<l.before.length;i++)switch(l.before[i]){case"$":o=e._.insert(o,a.currency.symbol,i);break;case" ":o=e._.insert(o," ",i+a.currency.symbol.length-1)}for(i=l.after.length-1;i>=0;i--)switch(l.after[i]){case"$":o=i===l.after.length-1?o+a.currency.symbol:e._.insert(o,a.currency.symbol,-(l.after.length-(1+i)));break;case" ":o=i===l.after.length-1?o+" ":e._.insert(o," ",-(l.after.length-(1+i)+a.currency.symbol.length-1))}return o}}),e.register("format","exponential",{regexps:{format:/(e\+|e-)/,unformat:/(e\+|e-)/},format:function(t,n,r){var o=("number"!=typeof t||e._.isNaN(t)?"0e+0":t.toExponential()).split("e");return n=n.replace(/e[\+|\-]{1}0/,""),e._.numberToFormat(Number(o[0]),n,r)+"e"+o[1]},unformat:function(t){var n=e._.includes(t,"e+")?t.split("e+"):t.split("e-"),r=Number(n[0]),o=Number(n[1]);return o=e._.includes(t,"e-")?o*=-1:o,e._.reduce([r,Math.pow(10,o)],(function(t,n,r,o){var i=e._.correctionFactor(t,n);return t*i*(n*i)/(i*i)}),1)}}),e.register("format","ordinal",{regexps:{format:/(o)/},format:function(t,n,r){var o=e.locales[e.options.currentLocale],i=e._.includes(n," o")?" ":"";return n=n.replace(/\s?o/,""),i+=o.ordinal(t),e._.numberToFormat(t,n,r)+i}}),e.register("format","percentage",{regexps:{format:/(%)/,unformat:/(%)/},format:function(t,n,r){var o,i=e._.includes(n," %")?" ":"";return e.options.scalePercentBy100&&(t*=100),n=n.replace(/\s?\%/,""),o=e._.numberToFormat(t,n,r),e._.includes(o,")")?((o=o.split("")).splice(-1,0,i+"%"),o=o.join("")):o=o+i+"%",o},unformat:function(t){var n=e._.stringToNumber(t);return e.options.scalePercentBy100?.01*n:n}}),e.register("format","time",{regexps:{format:/(:)/,unformat:/(:)/},format:function(e,t,n){var r=Math.floor(e/60/60),o=Math.floor((e-60*r*60)/60),i=Math.round(e-60*r*60-60*o);return r+":"+(o<10?"0"+o:o)+":"+(i<10?"0"+i:i)},unformat:function(e){var t=e.split(":"),n=0;return 3===t.length?(n+=60*Number(t[0])*60,n+=60*Number(t[1]),n+=Number(t[2])):2===t.length&&(n+=60*Number(t[0]),n+=Number(t[1])),Number(n)}}),e}))},S(L={exports:{}},L.exports),L.exports);function j(t){let n,r,o,i,f,m;return{c(){var e,a,l;n=c("main"),r=c("div"),o=c("div"),i=c("div"),f=c("div"),m=c("canvas"),s(m,"id",O),s(m,"width",t[0]),s(m,"height",t[1]),e="background-color",a="#000",m.style.setProperty(e,a,l?"important":""),s(f,"class","canvas-container svelte-7fm08w"),s(i,"class","image-sequence svelte-7fm08w"),s(o,"class","scroll-sequence svelte-7fm08w"),s(r,"class","scroll-player-container svelte-7fm08w")},m(e,t){l(e,n,t),a(n,r),a(r,o),a(o,i),a(i,f),a(f,m)},p:e,i:e,o:e,d(e){e&&u(n)}}}const O="scroll-player",A=176;function q(e){const t=document.documentElement.clientWidth,n=document.documentElement.clientHeight;let r;let o,i,a=[],l=function(){let e=[];for(let t=0;t<A;t++)e.push(`https://www.apple.com.cn/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/06-transparency-head/${z(t).format("0000")}.jpg`);return e}();function u(){const e=t=>{const n=new Image;n.onload=e=>{a.push(n),a.length===A&&(console.log("游戏 🎮 开始了哟!"),window.requestAnimationFrame(f))},n.src=t,0!==l.length&&e(l.shift())};e(l.shift())}let c=0,s=0;function f(){s<=c?(m(a[s]),s+1<c&&s++):s>=c&&(m(a[s]),s-1>c&&s--),s>A&&(s=A),window.requestAnimationFrame(f)}function m(e){i.clearRect(0,0,t,n),i.drawImage(e,0,0)}function d(){const e=document.documentElement;e.scrollHeight,e.clientHeight,e.scrollTop;let t=r/A;c=Math.round(document.documentElement.scrollTop/t),console.log("compute",document.documentElement.scrollTop,Math.round(document.documentElement.scrollTop/t))}return window.onload=()=>{r=document.querySelector(".scroll-player-container").clientHeight-document.documentElement.clientHeight,o=document.getElementById(O),i=o.getContext("2d"),document.addEventListener("scroll",d),u()},[t,n]}class R extends k{constructor(e){super(),T(this,e,q,j,i,{})}}function C(t){let n,r,o;return r=new R({}),{c(){var e;n=c("main"),(e=r.$$.fragment)&&e.c(),s(n,"class","svelte-1jrehmj")},m(e,t){l(e,n,t),N(r,n,null),o=!0},p:e,i(e){o||(B(r.$$.fragment,e),o=!0)},o(e){!function(e,t,n,r){if(e&&e.o){if(F.has(e))return;F.add(e),(void 0).c.push((()=>{F.delete(e),r&&(n&&e.d(1),r())})),e.o(t)}}(r.$$.fragment,e),o=!1},d(e){e&&u(n),M(r)}}}return new class extends k{constructor(e){super(),T(this,e,null,C,i,{})}}({target:document.body,props:{name:"world"}})}();
+
+    var numeral = createCommonjsModule(function (module) {
+    (function (global, factory) {
+        if (module.exports) {
+            module.exports = factory();
+        } else {
+            global.numeral = factory();
+        }
+    }(commonjsGlobal, function () {
+        /************************************
+            Variables
+        ************************************/
+
+        var numeral,
+            _,
+            VERSION = '2.0.6',
+            formats = {},
+            locales = {},
+            defaults = {
+                currentLocale: 'en',
+                zeroFormat: null,
+                nullFormat: null,
+                defaultFormat: '0,0',
+                scalePercentBy100: true
+            },
+            options = {
+                currentLocale: defaults.currentLocale,
+                zeroFormat: defaults.zeroFormat,
+                nullFormat: defaults.nullFormat,
+                defaultFormat: defaults.defaultFormat,
+                scalePercentBy100: defaults.scalePercentBy100
+            };
+
+
+        /************************************
+            Constructors
+        ************************************/
+
+        // Numeral prototype object
+        function Numeral(input, number) {
+            this._input = input;
+
+            this._value = number;
+        }
+
+        numeral = function(input) {
+            var value,
+                kind,
+                unformatFunction,
+                regexp;
+
+            if (numeral.isNumeral(input)) {
+                value = input.value();
+            } else if (input === 0 || typeof input === 'undefined') {
+                value = 0;
+            } else if (input === null || _.isNaN(input)) {
+                value = null;
+            } else if (typeof input === 'string') {
+                if (options.zeroFormat && input === options.zeroFormat) {
+                    value = 0;
+                } else if (options.nullFormat && input === options.nullFormat || !input.replace(/[^0-9]+/g, '').length) {
+                    value = null;
+                } else {
+                    for (kind in formats) {
+                        regexp = typeof formats[kind].regexps.unformat === 'function' ? formats[kind].regexps.unformat() : formats[kind].regexps.unformat;
+
+                        if (regexp && input.match(regexp)) {
+                            unformatFunction = formats[kind].unformat;
+
+                            break;
+                        }
+                    }
+
+                    unformatFunction = unformatFunction || numeral._.stringToNumber;
+
+                    value = unformatFunction(input);
+                }
+            } else {
+                value = Number(input)|| null;
+            }
+
+            return new Numeral(input, value);
+        };
+
+        // version number
+        numeral.version = VERSION;
+
+        // compare numeral object
+        numeral.isNumeral = function(obj) {
+            return obj instanceof Numeral;
+        };
+
+        // helper functions
+        numeral._ = _ = {
+            // formats numbers separators, decimals places, signs, abbreviations
+            numberToFormat: function(value, format, roundingFunction) {
+                var locale = locales[numeral.options.currentLocale],
+                    negP = false,
+                    optDec = false,
+                    leadingCount = 0,
+                    abbr = '',
+                    trillion = 1000000000000,
+                    billion = 1000000000,
+                    million = 1000000,
+                    thousand = 1000,
+                    decimal = '',
+                    neg = false,
+                    abbrForce, // force abbreviation
+                    abs,
+                    int,
+                    precision,
+                    signed,
+                    thousands,
+                    output;
+
+                // make sure we never format a null value
+                value = value || 0;
+
+                abs = Math.abs(value);
+
+                // see if we should use parentheses for negative number or if we should prefix with a sign
+                // if both are present we default to parentheses
+                if (numeral._.includes(format, '(')) {
+                    negP = true;
+                    format = format.replace(/[\(|\)]/g, '');
+                } else if (numeral._.includes(format, '+') || numeral._.includes(format, '-')) {
+                    signed = numeral._.includes(format, '+') ? format.indexOf('+') : value < 0 ? format.indexOf('-') : -1;
+                    format = format.replace(/[\+|\-]/g, '');
+                }
+
+                // see if abbreviation is wanted
+                if (numeral._.includes(format, 'a')) {
+                    abbrForce = format.match(/a(k|m|b|t)?/);
+
+                    abbrForce = abbrForce ? abbrForce[1] : false;
+
+                    // check for space before abbreviation
+                    if (numeral._.includes(format, ' a')) {
+                        abbr = ' ';
+                    }
+
+                    format = format.replace(new RegExp(abbr + 'a[kmbt]?'), '');
+
+                    if (abs >= trillion && !abbrForce || abbrForce === 't') {
+                        // trillion
+                        abbr += locale.abbreviations.trillion;
+                        value = value / trillion;
+                    } else if (abs < trillion && abs >= billion && !abbrForce || abbrForce === 'b') {
+                        // billion
+                        abbr += locale.abbreviations.billion;
+                        value = value / billion;
+                    } else if (abs < billion && abs >= million && !abbrForce || abbrForce === 'm') {
+                        // million
+                        abbr += locale.abbreviations.million;
+                        value = value / million;
+                    } else if (abs < million && abs >= thousand && !abbrForce || abbrForce === 'k') {
+                        // thousand
+                        abbr += locale.abbreviations.thousand;
+                        value = value / thousand;
+                    }
+                }
+
+                // check for optional decimals
+                if (numeral._.includes(format, '[.]')) {
+                    optDec = true;
+                    format = format.replace('[.]', '.');
+                }
+
+                // break number and format
+                int = value.toString().split('.')[0];
+                precision = format.split('.')[1];
+                thousands = format.indexOf(',');
+                leadingCount = (format.split('.')[0].split(',')[0].match(/0/g) || []).length;
+
+                if (precision) {
+                    if (numeral._.includes(precision, '[')) {
+                        precision = precision.replace(']', '');
+                        precision = precision.split('[');
+                        decimal = numeral._.toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+                    } else {
+                        decimal = numeral._.toFixed(value, precision.length, roundingFunction);
+                    }
+
+                    int = decimal.split('.')[0];
+
+                    if (numeral._.includes(decimal, '.')) {
+                        decimal = locale.delimiters.decimal + decimal.split('.')[1];
+                    } else {
+                        decimal = '';
+                    }
+
+                    if (optDec && Number(decimal.slice(1)) === 0) {
+                        decimal = '';
+                    }
+                } else {
+                    int = numeral._.toFixed(value, 0, roundingFunction);
+                }
+
+                // check abbreviation again after rounding
+                if (abbr && !abbrForce && Number(int) >= 1000 && abbr !== locale.abbreviations.trillion) {
+                    int = String(Number(int) / 1000);
+
+                    switch (abbr) {
+                        case locale.abbreviations.thousand:
+                            abbr = locale.abbreviations.million;
+                            break;
+                        case locale.abbreviations.million:
+                            abbr = locale.abbreviations.billion;
+                            break;
+                        case locale.abbreviations.billion:
+                            abbr = locale.abbreviations.trillion;
+                            break;
+                    }
+                }
+
+
+                // format number
+                if (numeral._.includes(int, '-')) {
+                    int = int.slice(1);
+                    neg = true;
+                }
+
+                if (int.length < leadingCount) {
+                    for (var i = leadingCount - int.length; i > 0; i--) {
+                        int = '0' + int;
+                    }
+                }
+
+                if (thousands > -1) {
+                    int = int.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + locale.delimiters.thousands);
+                }
+
+                if (format.indexOf('.') === 0) {
+                    int = '';
+                }
+
+                output = int + decimal + (abbr ? abbr : '');
+
+                if (negP) {
+                    output = (negP && neg ? '(' : '') + output + (negP && neg ? ')' : '');
+                } else {
+                    if (signed >= 0) {
+                        output = signed === 0 ? (neg ? '-' : '+') + output : output + (neg ? '-' : '+');
+                    } else if (neg) {
+                        output = '-' + output;
+                    }
+                }
+
+                return output;
+            },
+            // unformats numbers separators, decimals places, signs, abbreviations
+            stringToNumber: function(string) {
+                var locale = locales[options.currentLocale],
+                    stringOriginal = string,
+                    abbreviations = {
+                        thousand: 3,
+                        million: 6,
+                        billion: 9,
+                        trillion: 12
+                    },
+                    abbreviation,
+                    value,
+                    regexp;
+
+                if (options.zeroFormat && string === options.zeroFormat) {
+                    value = 0;
+                } else if (options.nullFormat && string === options.nullFormat || !string.replace(/[^0-9]+/g, '').length) {
+                    value = null;
+                } else {
+                    value = 1;
+
+                    if (locale.delimiters.decimal !== '.') {
+                        string = string.replace(/\./g, '').replace(locale.delimiters.decimal, '.');
+                    }
+
+                    for (abbreviation in abbreviations) {
+                        regexp = new RegExp('[^a-zA-Z]' + locale.abbreviations[abbreviation] + '(?:\\)|(\\' + locale.currency.symbol + ')?(?:\\))?)?$');
+
+                        if (stringOriginal.match(regexp)) {
+                            value *= Math.pow(10, abbreviations[abbreviation]);
+                            break;
+                        }
+                    }
+
+                    // check for negative number
+                    value *= (string.split('-').length + Math.min(string.split('(').length - 1, string.split(')').length - 1)) % 2 ? 1 : -1;
+
+                    // remove non numbers
+                    string = string.replace(/[^0-9\.]+/g, '');
+
+                    value *= Number(string);
+                }
+
+                return value;
+            },
+            isNaN: function(value) {
+                return typeof value === 'number' && isNaN(value);
+            },
+            includes: function(string, search) {
+                return string.indexOf(search) !== -1;
+            },
+            insert: function(string, subString, start) {
+                return string.slice(0, start) + subString + string.slice(start);
+            },
+            reduce: function(array, callback /*, initialValue*/) {
+                if (this === null) {
+                    throw new TypeError('Array.prototype.reduce called on null or undefined');
+                }
+
+                if (typeof callback !== 'function') {
+                    throw new TypeError(callback + ' is not a function');
+                }
+
+                var t = Object(array),
+                    len = t.length >>> 0,
+                    k = 0,
+                    value;
+
+                if (arguments.length === 3) {
+                    value = arguments[2];
+                } else {
+                    while (k < len && !(k in t)) {
+                        k++;
+                    }
+
+                    if (k >= len) {
+                        throw new TypeError('Reduce of empty array with no initial value');
+                    }
+
+                    value = t[k++];
+                }
+                for (; k < len; k++) {
+                    if (k in t) {
+                        value = callback(value, t[k], k, t);
+                    }
+                }
+                return value;
+            },
+            /**
+             * Computes the multiplier necessary to make x >= 1,
+             * effectively eliminating miscalculations caused by
+             * finite precision.
+             */
+            multiplier: function (x) {
+                var parts = x.toString().split('.');
+
+                return parts.length < 2 ? 1 : Math.pow(10, parts[1].length);
+            },
+            /**
+             * Given a variable number of arguments, returns the maximum
+             * multiplier that must be used to normalize an operation involving
+             * all of them.
+             */
+            correctionFactor: function () {
+                var args = Array.prototype.slice.call(arguments);
+
+                return args.reduce(function(accum, next) {
+                    var mn = _.multiplier(next);
+                    return accum > mn ? accum : mn;
+                }, 1);
+            },
+            /**
+             * Implementation of toFixed() that treats floats more like decimals
+             *
+             * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+             * problems for accounting- and finance-related software.
+             */
+            toFixed: function(value, maxDecimals, roundingFunction, optionals) {
+                var splitValue = value.toString().split('.'),
+                    minDecimals = maxDecimals - (optionals || 0),
+                    boundedPrecision,
+                    optionalsRegExp,
+                    power,
+                    output;
+
+                // Use the smallest precision value possible to avoid errors from floating point representation
+                if (splitValue.length === 2) {
+                  boundedPrecision = Math.min(Math.max(splitValue[1].length, minDecimals), maxDecimals);
+                } else {
+                  boundedPrecision = minDecimals;
+                }
+
+                power = Math.pow(10, boundedPrecision);
+
+                // Multiply up by precision, round accurately, then divide and use native toFixed():
+                output = (roundingFunction(value + 'e+' + boundedPrecision) / power).toFixed(boundedPrecision);
+
+                if (optionals > maxDecimals - boundedPrecision) {
+                    optionalsRegExp = new RegExp('\\.?0{1,' + (optionals - (maxDecimals - boundedPrecision)) + '}$');
+                    output = output.replace(optionalsRegExp, '');
+                }
+
+                return output;
+            }
+        };
+
+        // avaliable options
+        numeral.options = options;
+
+        // avaliable formats
+        numeral.formats = formats;
+
+        // avaliable formats
+        numeral.locales = locales;
+
+        // This function sets the current locale.  If
+        // no arguments are passed in, it will simply return the current global
+        // locale key.
+        numeral.locale = function(key) {
+            if (key) {
+                options.currentLocale = key.toLowerCase();
+            }
+
+            return options.currentLocale;
+        };
+
+        // This function provides access to the loaded locale data.  If
+        // no arguments are passed in, it will simply return the current
+        // global locale object.
+        numeral.localeData = function(key) {
+            if (!key) {
+                return locales[options.currentLocale];
+            }
+
+            key = key.toLowerCase();
+
+            if (!locales[key]) {
+                throw new Error('Unknown locale : ' + key);
+            }
+
+            return locales[key];
+        };
+
+        numeral.reset = function() {
+            for (var property in defaults) {
+                options[property] = defaults[property];
+            }
+        };
+
+        numeral.zeroFormat = function(format) {
+            options.zeroFormat = typeof(format) === 'string' ? format : null;
+        };
+
+        numeral.nullFormat = function (format) {
+            options.nullFormat = typeof(format) === 'string' ? format : null;
+        };
+
+        numeral.defaultFormat = function(format) {
+            options.defaultFormat = typeof(format) === 'string' ? format : '0.0';
+        };
+
+        numeral.register = function(type, name, format) {
+            name = name.toLowerCase();
+
+            if (this[type + 's'][name]) {
+                throw new TypeError(name + ' ' + type + ' already registered.');
+            }
+
+            this[type + 's'][name] = format;
+
+            return format;
+        };
+
+
+        numeral.validate = function(val, culture) {
+            var _decimalSep,
+                _thousandSep,
+                _currSymbol,
+                _valArray,
+                _abbrObj,
+                _thousandRegEx,
+                localeData,
+                temp;
+
+            //coerce val to string
+            if (typeof val !== 'string') {
+                val += '';
+
+                if (console.warn) {
+                    console.warn('Numeral.js: Value is not string. It has been co-erced to: ', val);
+                }
+            }
+
+            //trim whitespaces from either sides
+            val = val.trim();
+
+            //if val is just digits return true
+            if (!!val.match(/^\d+$/)) {
+                return true;
+            }
+
+            //if val is empty return false
+            if (val === '') {
+                return false;
+            }
+
+            //get the decimal and thousands separator from numeral.localeData
+            try {
+                //check if the culture is understood by numeral. if not, default it to current locale
+                localeData = numeral.localeData(culture);
+            } catch (e) {
+                localeData = numeral.localeData(numeral.locale());
+            }
+
+            //setup the delimiters and currency symbol based on culture/locale
+            _currSymbol = localeData.currency.symbol;
+            _abbrObj = localeData.abbreviations;
+            _decimalSep = localeData.delimiters.decimal;
+            if (localeData.delimiters.thousands === '.') {
+                _thousandSep = '\\.';
+            } else {
+                _thousandSep = localeData.delimiters.thousands;
+            }
+
+            // validating currency symbol
+            temp = val.match(/^[^\d]+/);
+            if (temp !== null) {
+                val = val.substr(1);
+                if (temp[0] !== _currSymbol) {
+                    return false;
+                }
+            }
+
+            //validating abbreviation symbol
+            temp = val.match(/[^\d]+$/);
+            if (temp !== null) {
+                val = val.slice(0, -1);
+                if (temp[0] !== _abbrObj.thousand && temp[0] !== _abbrObj.million && temp[0] !== _abbrObj.billion && temp[0] !== _abbrObj.trillion) {
+                    return false;
+                }
+            }
+
+            _thousandRegEx = new RegExp(_thousandSep + '{2}');
+
+            if (!val.match(/[^\d.,]/g)) {
+                _valArray = val.split(_decimalSep);
+                if (_valArray.length > 2) {
+                    return false;
+                } else {
+                    if (_valArray.length < 2) {
+                        return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx));
+                    } else {
+                        if (_valArray[0].length === 1) {
+                            return ( !! _valArray[0].match(/^\d+$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                        } else {
+                            return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                        }
+                    }
+                }
+            }
+
+            return false;
+        };
+
+
+        /************************************
+            Numeral Prototype
+        ************************************/
+
+        numeral.fn = Numeral.prototype = {
+            clone: function() {
+                return numeral(this);
+            },
+            format: function(inputString, roundingFunction) {
+                var value = this._value,
+                    format = inputString || options.defaultFormat,
+                    kind,
+                    output,
+                    formatFunction;
+
+                // make sure we have a roundingFunction
+                roundingFunction = roundingFunction || Math.round;
+
+                // format based on value
+                if (value === 0 && options.zeroFormat !== null) {
+                    output = options.zeroFormat;
+                } else if (value === null && options.nullFormat !== null) {
+                    output = options.nullFormat;
+                } else {
+                    for (kind in formats) {
+                        if (format.match(formats[kind].regexps.format)) {
+                            formatFunction = formats[kind].format;
+
+                            break;
+                        }
+                    }
+
+                    formatFunction = formatFunction || numeral._.numberToFormat;
+
+                    output = formatFunction(value, format, roundingFunction);
+                }
+
+                return output;
+            },
+            value: function() {
+                return this._value;
+            },
+            input: function() {
+                return this._input;
+            },
+            set: function(value) {
+                this._value = Number(value);
+
+                return this;
+            },
+            add: function(value) {
+                var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+                function cback(accum, curr, currI, O) {
+                    return accum + Math.round(corrFactor * curr);
+                }
+
+                this._value = _.reduce([this._value, value], cback, 0) / corrFactor;
+
+                return this;
+            },
+            subtract: function(value) {
+                var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+                function cback(accum, curr, currI, O) {
+                    return accum - Math.round(corrFactor * curr);
+                }
+
+                this._value = _.reduce([value], cback, Math.round(this._value * corrFactor)) / corrFactor;
+
+                return this;
+            },
+            multiply: function(value) {
+                function cback(accum, curr, currI, O) {
+                    var corrFactor = _.correctionFactor(accum, curr);
+                    return Math.round(accum * corrFactor) * Math.round(curr * corrFactor) / Math.round(corrFactor * corrFactor);
+                }
+
+                this._value = _.reduce([this._value, value], cback, 1);
+
+                return this;
+            },
+            divide: function(value) {
+                function cback(accum, curr, currI, O) {
+                    var corrFactor = _.correctionFactor(accum, curr);
+                    return Math.round(accum * corrFactor) / Math.round(curr * corrFactor);
+                }
+
+                this._value = _.reduce([this._value, value], cback);
+
+                return this;
+            },
+            difference: function(value) {
+                return Math.abs(numeral(this._value).subtract(value).value());
+            }
+        };
+
+        /************************************
+            Default Locale && Format
+        ************************************/
+
+        numeral.register('locale', 'en', {
+            delimiters: {
+                thousands: ',',
+                decimal: '.'
+            },
+            abbreviations: {
+                thousand: 'k',
+                million: 'm',
+                billion: 'b',
+                trillion: 't'
+            },
+            ordinal: function(number) {
+                var b = number % 10;
+                return (~~(number % 100 / 10) === 1) ? 'th' :
+                    (b === 1) ? 'st' :
+                    (b === 2) ? 'nd' :
+                    (b === 3) ? 'rd' : 'th';
+            },
+            currency: {
+                symbol: '$'
+            }
+        });
+
+        
+
+    (function() {
+            numeral.register('format', 'bps', {
+                regexps: {
+                    format: /(BPS)/,
+                    unformat: /(BPS)/
+                },
+                format: function(value, format, roundingFunction) {
+                    var space = numeral._.includes(format, ' BPS') ? ' ' : '',
+                        output;
+
+                    value = value * 10000;
+
+                    // check for space before BPS
+                    format = format.replace(/\s?BPS/, '');
+
+                    output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                    if (numeral._.includes(output, ')')) {
+                        output = output.split('');
+
+                        output.splice(-1, 0, space + 'BPS');
+
+                        output = output.join('');
+                    } else {
+                        output = output + space + 'BPS';
+                    }
+
+                    return output;
+                },
+                unformat: function(string) {
+                    return +(numeral._.stringToNumber(string) * 0.0001).toFixed(15);
+                }
+            });
+    })();
+
+
+    (function() {
+            var decimal = {
+                base: 1000,
+                suffixes: ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+            },
+            binary = {
+                base: 1024,
+                suffixes: ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+            };
+
+        var allSuffixes =  decimal.suffixes.concat(binary.suffixes.filter(function (item) {
+                return decimal.suffixes.indexOf(item) < 0;
+            }));
+            var unformatRegex = allSuffixes.join('|');
+            // Allow support for BPS (http://www.investopedia.com/terms/b/basispoint.asp)
+            unformatRegex = '(' + unformatRegex.replace('B', 'B(?!PS)') + ')';
+
+        numeral.register('format', 'bytes', {
+            regexps: {
+                format: /([0\s]i?b)/,
+                unformat: new RegExp(unformatRegex)
+            },
+            format: function(value, format, roundingFunction) {
+                var output,
+                    bytes = numeral._.includes(format, 'ib') ? binary : decimal,
+                    suffix = numeral._.includes(format, ' b') || numeral._.includes(format, ' ib') ? ' ' : '',
+                    power,
+                    min,
+                    max;
+
+                // check for space before
+                format = format.replace(/\s?i?b/, '');
+
+                for (power = 0; power <= bytes.suffixes.length; power++) {
+                    min = Math.pow(bytes.base, power);
+                    max = Math.pow(bytes.base, power + 1);
+
+                    if (value === null || value === 0 || value >= min && value < max) {
+                        suffix += bytes.suffixes[power];
+
+                        if (min > 0) {
+                            value = value / min;
+                        }
+
+                        break;
+                    }
+                }
+
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                return output + suffix;
+            },
+            unformat: function(string) {
+                var value = numeral._.stringToNumber(string),
+                    power,
+                    bytesMultiplier;
+
+                if (value) {
+                    for (power = decimal.suffixes.length - 1; power >= 0; power--) {
+                        if (numeral._.includes(string, decimal.suffixes[power])) {
+                            bytesMultiplier = Math.pow(decimal.base, power);
+
+                            break;
+                        }
+
+                        if (numeral._.includes(string, binary.suffixes[power])) {
+                            bytesMultiplier = Math.pow(binary.base, power);
+
+                            break;
+                        }
+                    }
+
+                    value *= (bytesMultiplier || 1);
+                }
+
+                return value;
+            }
+        });
+    })();
+
+
+    (function() {
+            numeral.register('format', 'currency', {
+            regexps: {
+                format: /(\$)/
+            },
+            format: function(value, format, roundingFunction) {
+                var locale = numeral.locales[numeral.options.currentLocale],
+                    symbols = {
+                        before: format.match(/^([\+|\-|\(|\s|\$]*)/)[0],
+                        after: format.match(/([\+|\-|\)|\s|\$]*)$/)[0]
+                    },
+                    output,
+                    symbol,
+                    i;
+
+                // strip format of spaces and $
+                format = format.replace(/\s?\$\s?/, '');
+
+                // format the number
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                // update the before and after based on value
+                if (value >= 0) {
+                    symbols.before = symbols.before.replace(/[\-\(]/, '');
+                    symbols.after = symbols.after.replace(/[\-\)]/, '');
+                } else if (value < 0 && (!numeral._.includes(symbols.before, '-') && !numeral._.includes(symbols.before, '('))) {
+                    symbols.before = '-' + symbols.before;
+                }
+
+                // loop through each before symbol
+                for (i = 0; i < symbols.before.length; i++) {
+                    symbol = symbols.before[i];
+
+                    switch (symbol) {
+                        case '$':
+                            output = numeral._.insert(output, locale.currency.symbol, i);
+                            break;
+                        case ' ':
+                            output = numeral._.insert(output, ' ', i + locale.currency.symbol.length - 1);
+                            break;
+                    }
+                }
+
+                // loop through each after symbol
+                for (i = symbols.after.length - 1; i >= 0; i--) {
+                    symbol = symbols.after[i];
+
+                    switch (symbol) {
+                        case '$':
+                            output = i === symbols.after.length - 1 ? output + locale.currency.symbol : numeral._.insert(output, locale.currency.symbol, -(symbols.after.length - (1 + i)));
+                            break;
+                        case ' ':
+                            output = i === symbols.after.length - 1 ? output + ' ' : numeral._.insert(output, ' ', -(symbols.after.length - (1 + i) + locale.currency.symbol.length - 1));
+                            break;
+                    }
+                }
+
+
+                return output;
+            }
+        });
+    })();
+
+
+    (function() {
+            numeral.register('format', 'exponential', {
+            regexps: {
+                format: /(e\+|e-)/,
+                unformat: /(e\+|e-)/
+            },
+            format: function(value, format, roundingFunction) {
+                var output,
+                    exponential = typeof value === 'number' && !numeral._.isNaN(value) ? value.toExponential() : '0e+0',
+                    parts = exponential.split('e');
+
+                format = format.replace(/e[\+|\-]{1}0/, '');
+
+                output = numeral._.numberToFormat(Number(parts[0]), format, roundingFunction);
+
+                return output + 'e' + parts[1];
+            },
+            unformat: function(string) {
+                var parts = numeral._.includes(string, 'e+') ? string.split('e+') : string.split('e-'),
+                    value = Number(parts[0]),
+                    power = Number(parts[1]);
+
+                power = numeral._.includes(string, 'e-') ? power *= -1 : power;
+
+                function cback(accum, curr, currI, O) {
+                    var corrFactor = numeral._.correctionFactor(accum, curr),
+                        num = (accum * corrFactor) * (curr * corrFactor) / (corrFactor * corrFactor);
+                    return num;
+                }
+
+                return numeral._.reduce([value, Math.pow(10, power)], cback, 1);
+            }
+        });
+    })();
+
+
+    (function() {
+            numeral.register('format', 'ordinal', {
+            regexps: {
+                format: /(o)/
+            },
+            format: function(value, format, roundingFunction) {
+                var locale = numeral.locales[numeral.options.currentLocale],
+                    output,
+                    ordinal = numeral._.includes(format, ' o') ? ' ' : '';
+
+                // check for space before
+                format = format.replace(/\s?o/, '');
+
+                ordinal += locale.ordinal(value);
+
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                return output + ordinal;
+            }
+        });
+    })();
+
+
+    (function() {
+            numeral.register('format', 'percentage', {
+            regexps: {
+                format: /(%)/,
+                unformat: /(%)/
+            },
+            format: function(value, format, roundingFunction) {
+                var space = numeral._.includes(format, ' %') ? ' ' : '',
+                    output;
+
+                if (numeral.options.scalePercentBy100) {
+                    value = value * 100;
+                }
+
+                // check for space before %
+                format = format.replace(/\s?\%/, '');
+
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                if (numeral._.includes(output, ')')) {
+                    output = output.split('');
+
+                    output.splice(-1, 0, space + '%');
+
+                    output = output.join('');
+                } else {
+                    output = output + space + '%';
+                }
+
+                return output;
+            },
+            unformat: function(string) {
+                var number = numeral._.stringToNumber(string);
+                if (numeral.options.scalePercentBy100) {
+                    return number * 0.01;
+                }
+                return number;
+            }
+        });
+    })();
+
+
+    (function() {
+            numeral.register('format', 'time', {
+            regexps: {
+                format: /(:)/,
+                unformat: /(:)/
+            },
+            format: function(value, format, roundingFunction) {
+                var hours = Math.floor(value / 60 / 60),
+                    minutes = Math.floor((value - (hours * 60 * 60)) / 60),
+                    seconds = Math.round(value - (hours * 60 * 60) - (minutes * 60));
+
+                return hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+            },
+            unformat: function(string) {
+                var timeArray = string.split(':'),
+                    seconds = 0;
+
+                // turn hours and minutes into seconds and add them all up
+                if (timeArray.length === 3) {
+                    // hours
+                    seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+                    // minutes
+                    seconds = seconds + (Number(timeArray[1]) * 60);
+                    // seconds
+                    seconds = seconds + Number(timeArray[2]);
+                } else if (timeArray.length === 2) {
+                    // minutes
+                    seconds = seconds + (Number(timeArray[0]) * 60);
+                    // seconds
+                    seconds = seconds + Number(timeArray[1]);
+                }
+                return Number(seconds);
+            }
+        });
+    })();
+
+    return numeral;
+    }));
+    });
+
+    /* src/AppleAnime.svelte generated by Svelte v3.43.1 */
+
+    const { console: console_1 } = globals;
+    const file$1 = "src/AppleAnime.svelte";
+
+    function create_fragment$1(ctx) {
+    	let main;
+    	let div3;
+    	let div2;
+    	let div1;
+    	let div0;
+    	let canvas_1;
+    	let t0;
+    	let h1;
+    	let t1;
+
+    	const block = {
+    		c: function create() {
+    			main = element("main");
+    			div3 = element("div");
+    			div2 = element("div");
+    			div1 = element("div");
+    			div0 = element("div");
+    			canvas_1 = element("canvas");
+    			t0 = space();
+    			h1 = element("h1");
+    			t1 = text("加载中");
+    			attr_dev(canvas_1, "id", canvasId);
+    			attr_dev(canvas_1, "width", /*width*/ ctx[1]);
+    			attr_dev(canvas_1, "height", /*height*/ ctx[2]);
+    			set_style(canvas_1, "background-color", "#000");
+    			add_location(canvas_1, file$1, 131, 6, 3282);
+    			attr_dev(div0, "class", "canvas-container svelte-1q9dstg");
+    			add_location(div0, file$1, 130, 5, 3244);
+    			attr_dev(div1, "class", "image-sequence svelte-1q9dstg");
+    			add_location(div1, file$1, 129, 4, 3209);
+    			attr_dev(div2, "class", "scroll-sequence svelte-1q9dstg");
+    			add_location(div2, file$1, 128, 3, 3174);
+    			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
+    			attr_dev(div3, "class", "scroll-player-container svelte-1q9dstg");
+    			add_location(div3, file$1, 127, 2, 3079);
+    			attr_dev(h1, "class", "loading svelte-1q9dstg");
+    			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
+    			add_location(h1, file$1, 137, 2, 3411);
+    			add_location(main, file$1, 125, 0, 3068);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, main, anchor);
+    			append_dev(main, div3);
+    			append_dev(div3, div2);
+    			append_dev(div2, div1);
+    			append_dev(div1, div0);
+    			append_dev(div0, canvas_1);
+    			append_dev(main, t0);
+    			append_dev(main, h1);
+    			append_dev(h1, t1);
+    		},
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*flag*/ 1) {
+    				set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
+    			}
+
+    			if (dirty & /*flag*/ 1) {
+    				set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
+    			}
+    		},
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(main);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment$1.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    const canvasId = 'scroll-player';
+    const imagesLength = 176; // 图片总数量
+
+    function instance$1($$self, $$props, $$invalidate) {
+    	let { $$slots: slots = {}, $$scope } = $$props;
+    	validate_slots('AppleAnime', slots, []);
+    	let name = 'Anime';
+    	const width = document.documentElement.clientWidth;
+    	const height = document.documentElement.clientHeight;
+    	let flag = false;
+    	let boxHeight;
+
+    	/**
+     * 获取图片路径
+     */
+    	function getImagesPath() {
+    		let images = [];
+    		const baseUrl = 'https://www.apple.com.cn/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/06-transparency-head/';
+
+    		for (let i = 0; i < imagesLength; i++) {
+    			images.push(`${baseUrl}${numeral(i).format('0000')}.jpg`);
+    		}
+
+    		return images;
+    	}
+
+    	let imagesManager = [];
+    	let imagesPath = getImagesPath(); // 图片路径数字集合
+    	let canvas;
+    	let context;
+
+    	/** 加载图片 */
+    	function loadImages() {
+    		const loadNextImage = src => {
+    			const img = new Image();
+
+    			// 同步加载, 可优化为异步
+    			img.onload = e => {
+    				imagesManager.push(img);
+
+    				if (imagesManager.length === imagesLength) {
+    					// 代表所有图片加载完成 执行回调方法
+    					imagesLoadComplete();
+
+    					$$invalidate(0, flag = true);
+    				}
+    			};
+
+    			img.src = src;
+    			if (imagesPath.length === 0) return;
+    			loadNextImage(imagesPath.shift());
+    		};
+
+    		loadNextImage(imagesPath.shift());
+    	}
+
+    	function init() {
+    		boxHeight = document.querySelector('.scroll-player-container').clientHeight - document.documentElement.clientHeight;
+    		canvas = document.getElementById(canvasId);
+    		context = canvas.getContext('2d');
+
+    		// 加入scroll事件监听
+    		document.addEventListener('scroll', handleScroll);
+
+    		// 执行加载每一帧的所有图片
+    		loadImages();
+    	}
+
+    	let scrollIndex = 0; // 当前滚动进度待显示的图片索引值
+    	let currentIndex = 0; // 当前显示的图片索引值
+    	let raf = null;
+
+    	/** 图片加载完成回调 */
+    	function imagesLoadComplete() {
+    		console.log('游戏 🎮 开始了哟!');
+    		GameRun();
+    	}
+
+    	function GameRun() {
+    		raf = window.requestAnimationFrame(draw);
+    	}
+
+    	/**
+     * 处理滑动边界状态
+     */
+    	function draw() {
+    		if (currentIndex <= scrollIndex) {
+    			drawImages(imagesManager[currentIndex]);
+    			currentIndex + 1 < scrollIndex && currentIndex++;
+    		} else if (currentIndex >= scrollIndex) {
+    			drawImages(imagesManager[currentIndex]);
+    			currentIndex - 1 > scrollIndex && currentIndex--;
+    		}
+
+    		if (currentIndex > imagesLength) {
+    			currentIndex = imagesLength;
+    		}
+
+    		raf = window.requestAnimationFrame(draw);
+    	}
+
+    	/**
+     * 画布画图
+     */
+    	function drawImages(img) {
+    		context.clearRect(0, 0, width, height);
+    		context.drawImage(img, 0, 0);
+    	}
+
+    	/**
+     * 鼠标滚动事件回调, 计算出scrollIndex
+     */
+    	function handleScroll() {
+    		const docElement = document.documentElement;
+    		docElement.scrollHeight;
+    		docElement.clientHeight;
+    		docElement.scrollTop;
+    		let share = boxHeight / imagesLength;
+
+    		// 根据滚动距离, 等比例算出应该滚动到第几张图
+    		// scrollIndex = Math.round(scrollTop * imagesLength / (scrollHeight - clientHeight));
+    		scrollIndex = Math.round(document.documentElement.scrollTop / share);
+
+    		// console.log('compute', Math.round(boxHeight / imagesLength));
+    		console.log('compute', document.documentElement.scrollTop, Math.round(document.documentElement.scrollTop / share));
+    	}
+
+    	window.onload = () => {
+    		init();
+    	};
+
+    	const writable_props = [];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<AppleAnime> was created with unknown prop '${key}'`);
+    	});
+
+    	$$self.$capture_state = () => ({
+    		numeral,
+    		name,
+    		width,
+    		height,
+    		canvasId,
+    		imagesLength,
+    		flag,
+    		boxHeight,
+    		getImagesPath,
+    		imagesManager,
+    		imagesPath,
+    		canvas,
+    		context,
+    		loadImages,
+    		init,
+    		scrollIndex,
+    		currentIndex,
+    		raf,
+    		imagesLoadComplete,
+    		GameRun,
+    		draw,
+    		drawImages,
+    		handleScroll
+    	});
+
+    	$$self.$inject_state = $$props => {
+    		if ('name' in $$props) name = $$props.name;
+    		if ('flag' in $$props) $$invalidate(0, flag = $$props.flag);
+    		if ('boxHeight' in $$props) boxHeight = $$props.boxHeight;
+    		if ('imagesManager' in $$props) imagesManager = $$props.imagesManager;
+    		if ('imagesPath' in $$props) imagesPath = $$props.imagesPath;
+    		if ('canvas' in $$props) canvas = $$props.canvas;
+    		if ('context' in $$props) context = $$props.context;
+    		if ('scrollIndex' in $$props) scrollIndex = $$props.scrollIndex;
+    		if ('currentIndex' in $$props) currentIndex = $$props.currentIndex;
+    		if ('raf' in $$props) raf = $$props.raf;
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [flag, width, height];
+    }
+
+    class AppleAnime extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, {});
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "AppleAnime",
+    			options,
+    			id: create_fragment$1.name
+    		});
+    	}
+    }
+
+    /* src/App.svelte generated by Svelte v3.43.1 */
+    const file = "src/App.svelte";
+
+    function create_fragment(ctx) {
+    	let main;
+    	let anime;
+    	let current;
+    	anime = new AppleAnime({ $$inline: true });
+
+    	const block = {
+    		c: function create() {
+    			main = element("main");
+    			create_component(anime.$$.fragment);
+    			attr_dev(main, "class", "svelte-1jrehmj");
+    			add_location(main, file, 4, 0, 62);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, main, anchor);
+    			mount_component(anime, main, null);
+    			current = true;
+    		},
+    		p: noop,
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(anime.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(anime.$$.fragment, local);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(main);
+    			destroy_component(anime);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function instance($$self, $$props, $$invalidate) {
+    	let { $$slots: slots = {}, $$scope } = $$props;
+    	validate_slots('App', slots, []);
+    	const writable_props = [];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<App> was created with unknown prop '${key}'`);
+    	});
+
+    	$$self.$capture_state = () => ({ Anime: AppleAnime });
+    	return [];
+    }
+
+    class App extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance, create_fragment, safe_not_equal, {});
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "App",
+    			options,
+    			id: create_fragment.name
+    		});
+    	}
+    }
+
+    const app = new App({
+    	target: document.body,
+    	props: {
+    		name: 'world'
+    	}
+    });
+
+    return app;
+
+})();
 //# sourceMappingURL=bundle.js.map
