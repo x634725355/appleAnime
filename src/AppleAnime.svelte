@@ -35,8 +35,8 @@
 				imagesManager.push(img);
 				if (imagesManager.length === imagesLength) {
 					// 代表所有图片加载完成 执行回调方法
-					imagesLoadComplete();
 					flag = true;
+					imagesLoadComplete();
 				}
 			}
 

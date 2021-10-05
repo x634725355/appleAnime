@@ -1485,9 +1485,9 @@ var app = (function () {
 
     				if (imagesManager.length === imagesLength) {
     					// 代表所有图片加载完成 执行回调方法
-    					imagesLoadComplete();
-
     					$$invalidate(0, flag = true);
+
+    					imagesLoadComplete();
     				}
     			};
 
