@@ -25,21 +25,49 @@
 
   let imagesManager = [];
   let imagesPath = getImagesPath(); // 图片路径数字集合
+	let halfPath = imagesPath.splice(0, 88);
   let canvas;
   let context;
   /** 加载图片 */
-  function loadImages() {
+  async function loadImages() {
     const imgDom = document.querySelector("#imgLoading");
     let index = 0;
 
     const loadNextImage = () => {
-      const oldIndex = index;
+      const oldIndex = index + 88;
 
       imgDom.src = imagesPath[index];
       imgDom.onload = (e) => {
         imagesManager[oldIndex] = imgDom.cloneNode();
         index++;
         if (imagesManager.length === imagesLength) {
+          flag = true;
+          imagesLoadComplete();
+          return;
+        }
+        loadNextImage();
+      };
+
+      imgDom.onerror = (e) => {
+        loadNextImage();
+      };
+    };
+
+    loadNextImage();
+  }
+
+ 	async function loadHalfImages() {
+    const imgDom = document.querySelector("#imgHalfLoading");
+    let index = 0;
+
+    const loadNextImage = () => {
+      const oldIndex = index;
+
+      imgDom.src = halfPath[index];
+      imgDom.onload = (e) => {
+        imagesManager[oldIndex] = imgDom.cloneNode();
+        index++;
+        if (index >= 88) {
           flag = true;
           imagesLoadComplete();
           return;
@@ -64,6 +92,7 @@
     // 加入scroll事件监听
     document.addEventListener("scroll", handleScroll);
     // 执行加载每一帧的所有图片
+		loadHalfImages();
     loadImages();
   }
 
@@ -78,13 +107,17 @@
   }
 
   function GameRun() {
+		// setTimeout(() => {
+		// 	draw();
+		// }, 0);
+
     raf = window.requestAnimationFrame(draw);
   }
 
   /**
    * 处理滑动边界状态
    */
-  function draw() {
+  function draw(timestamp) {
     if (currentIndex <= scrollIndex) {
       drawImages(imagesManager[currentIndex]);
       currentIndex + 1 < scrollIndex && currentIndex++;
@@ -149,6 +182,7 @@
   </h1>
 
   <img src="" id="imgLoading" alt="" style="display: none;" />
+  <img src="" id="imgHalfLoading" alt="" style="display: none;" />
 </main>
 
 <style>

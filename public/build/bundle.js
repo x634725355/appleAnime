@@ -1401,25 +1401,25 @@ var app = (function () {
     			attr_dev(canvas_1, "height", height);
     			set_style(canvas_1, "background-color", "#000");
     			attr_dev(canvas_1, "class", "svelte-88ask2");
-    			add_location(canvas_1, file$1, 135, 12, 3183);
+    			add_location(canvas_1, file$1, 140, 12, 3280);
     			attr_dev(div0, "class", "canvas-container svelte-88ask2");
-    			add_location(div0, file$1, 134, 8, 3140);
+    			add_location(div0, file$1, 139, 8, 3237);
     			attr_dev(div1, "class", "image-sequence svelte-88ask2");
-    			add_location(div1, file$1, 133, 6, 3103);
+    			add_location(div1, file$1, 138, 6, 3200);
     			attr_dev(div2, "class", "scroll-sequence svelte-88ask2");
-    			add_location(div2, file$1, 132, 4, 3067);
+    			add_location(div2, file$1, 137, 4, 3164);
     			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
     			attr_dev(div3, "class", "scroll-player-container svelte-88ask2");
-    			add_location(div3, file$1, 128, 2, 2963);
+    			add_location(div3, file$1, 133, 2, 3060);
     			attr_dev(h1, "class", "loading svelte-88ask2");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 146, 2, 3376);
+    			add_location(h1, file$1, 151, 2, 3473);
     			if (!src_url_equal(img.src, img_src_value = "")) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "id", "imgLoading");
     			attr_dev(img, "alt", "");
     			set_style(img, "display", "none");
-    			add_location(img, file$1, 150, 2, 3467);
-    			add_location(main, file$1, 127, 0, 2954);
+    			add_location(img, file$1, 155, 2, 3564);
+    			add_location(main, file$1, 132, 0, 3051);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1548,13 +1548,17 @@ var app = (function () {
     	}
 
     	function GameRun() {
+    		// setTimeout(() => {
+    		// 	draw();
+    		// }, 0);
     		raf = window.requestAnimationFrame(draw);
     	}
 
     	/**
      * 处理滑动边界状态
      */
-    	function draw() {
+    	function draw(timestamp) {
+    		// console.log('这是什么', timestamp);
     		if (currentIndex <= scrollIndex) {
     			drawImages(imagesManager[currentIndex]);
     			currentIndex + 1 < scrollIndex && currentIndex++;
