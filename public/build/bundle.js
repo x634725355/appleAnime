@@ -1397,28 +1397,29 @@ var app = (function () {
     			t2 = space();
     			img = element("img");
     			attr_dev(canvas_1, "id", canvasId);
-    			attr_dev(canvas_1, "width", /*width*/ ctx[1]);
-    			attr_dev(canvas_1, "height", /*height*/ ctx[2]);
+    			attr_dev(canvas_1, "width", width);
+    			attr_dev(canvas_1, "height", height);
     			set_style(canvas_1, "background-color", "#000");
-    			add_location(canvas_1, file$1, 144, 10, 3624);
-    			attr_dev(div0, "class", "canvas-container svelte-1e74ng0");
-    			add_location(div0, file$1, 143, 8, 3583);
-    			attr_dev(div1, "class", "image-sequence svelte-1e74ng0");
-    			add_location(div1, file$1, 142, 6, 3546);
-    			attr_dev(div2, "class", "scroll-sequence svelte-1e74ng0");
-    			add_location(div2, file$1, 141, 4, 3510);
+    			attr_dev(canvas_1, "class", "svelte-88ask2");
+    			add_location(canvas_1, file$1, 135, 12, 3183);
+    			attr_dev(div0, "class", "canvas-container svelte-88ask2");
+    			add_location(div0, file$1, 134, 8, 3140);
+    			attr_dev(div1, "class", "image-sequence svelte-88ask2");
+    			add_location(div1, file$1, 133, 6, 3103);
+    			attr_dev(div2, "class", "scroll-sequence svelte-88ask2");
+    			add_location(div2, file$1, 132, 4, 3067);
     			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
-    			attr_dev(div3, "class", "scroll-player-container svelte-1e74ng0");
-    			add_location(div3, file$1, 137, 2, 3406);
-    			attr_dev(h1, "class", "loading svelte-1e74ng0");
+    			attr_dev(div3, "class", "scroll-player-container svelte-88ask2");
+    			add_location(div3, file$1, 128, 2, 2963);
+    			attr_dev(h1, "class", "loading svelte-88ask2");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 155, 2, 3807);
+    			add_location(h1, file$1, 146, 2, 3376);
     			if (!src_url_equal(img.src, img_src_value = "")) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "id", "imgLoading");
     			attr_dev(img, "alt", "");
     			set_style(img, "display", "none");
-    			add_location(img, file$1, 159, 2, 3898);
-    			add_location(main, file$1, 136, 0, 3397);
+    			add_location(img, file$1, 150, 2, 3467);
+    			add_location(main, file$1, 127, 0, 2954);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1463,6 +1464,8 @@ var app = (function () {
     	return block;
     }
 
+    const width = 1458;
+    const height = 820;
     const canvasId = "scroll-player";
     const imagesLength = 176; // 图片总数量
 
@@ -1470,8 +1473,6 @@ var app = (function () {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('AppleAnime', slots, []);
     	let name = "Anime";
-    	const width = document.documentElement.clientWidth;
-    	const height = document.documentElement.clientHeight;
     	let flag = false;
     	let boxHeight;
 
@@ -1491,7 +1492,6 @@ var app = (function () {
 
     	let imagesManager = [];
     	let imagesPath = getImagesPath(); // 图片路径数字集合
-    	let errorPath = [];
     	let canvas;
     	let context;
 
@@ -1583,17 +1583,13 @@ var app = (function () {
      */
     	function handleScroll() {
     		const docElement = document.documentElement;
-    		docElement.scrollHeight;
-    		docElement.clientHeight;
-    		docElement.scrollTop;
+    		const scrollTop = docElement.scrollTop;
     		let share = boxHeight / imagesLength;
 
     		// 根据滚动距离, 等比例算出应该滚动到第几张图
-    		// scrollIndex = Math.round(scrollTop * imagesLength / (scrollHeight - clientHeight));
-    		scrollIndex = Math.round(document.documentElement.scrollTop / share);
+    		scrollIndex = Math.round(scrollTop / share);
 
-    		// console.log('compute', Math.round(boxHeight / imagesLength));
-    		console.log("compute", document.documentElement.scrollTop, Math.round(document.documentElement.scrollTop / share));
+    		console.log("compute", scrollTop, Math.round(scrollTop / share));
     	}
 
     	window.onload = () => {
@@ -1618,7 +1614,6 @@ var app = (function () {
     		getImagesPath,
     		imagesManager,
     		imagesPath,
-    		errorPath,
     		canvas,
     		context,
     		loadImages,
@@ -1639,7 +1634,6 @@ var app = (function () {
     		if ('boxHeight' in $$props) boxHeight = $$props.boxHeight;
     		if ('imagesManager' in $$props) imagesManager = $$props.imagesManager;
     		if ('imagesPath' in $$props) imagesPath = $$props.imagesPath;
-    		if ('errorPath' in $$props) errorPath = $$props.errorPath;
     		if ('canvas' in $$props) canvas = $$props.canvas;
     		if ('context' in $$props) context = $$props.context;
     		if ('scrollIndex' in $$props) scrollIndex = $$props.scrollIndex;
@@ -1651,7 +1645,7 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [flag, width, height];
+    	return [flag];
     }
 
     class AppleAnime extends SvelteComponentDev {

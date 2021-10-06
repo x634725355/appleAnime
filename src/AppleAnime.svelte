@@ -2,8 +2,8 @@
   import numeral from "numeral";
 
   let name = "Anime";
-  const width = document.documentElement.clientWidth;
-  const height = document.documentElement.clientHeight;
+  const width = 1458;
+  const height = 820;
   const canvasId = "scroll-player";
   const imagesLength = 176; // 图片总数量
   let flag = false;
@@ -25,7 +25,6 @@
 
   let imagesManager = [];
   let imagesPath = getImagesPath(); // 图片路径数字集合
-  let errorPath = [];
   let canvas;
   let context;
   /** 加载图片 */
@@ -53,7 +52,7 @@
       };
     };
 
-		loadNextImage();
+    loadNextImage();
   }
 
   function init() {
@@ -65,7 +64,7 @@
     // 加入scroll事件监听
     document.addEventListener("scroll", handleScroll);
     // 执行加载每一帧的所有图片
-		loadImages();
+    loadImages();
   }
 
   let scrollIndex = 0; // 当前滚动进度待显示的图片索引值
@@ -114,19 +113,11 @@
    */
   function handleScroll() {
     const docElement = document.documentElement;
-    const scrollHeight = docElement.scrollHeight;
-    const clientHeight = docElement.clientHeight;
     const scrollTop = docElement.scrollTop;
     let share = boxHeight / imagesLength;
     // 根据滚动距离, 等比例算出应该滚动到第几张图
-    // scrollIndex = Math.round(scrollTop * imagesLength / (scrollHeight - clientHeight));
-    scrollIndex = Math.round(document.documentElement.scrollTop / share);
-    // console.log('compute', Math.round(boxHeight / imagesLength));
-    console.log(
-      "compute",
-      document.documentElement.scrollTop,
-      Math.round(document.documentElement.scrollTop / share)
-    );
+    scrollIndex = Math.round(scrollTop / share);
+    console.log("compute", scrollTop, Math.round(scrollTop / share));
   }
 
   window.onload = () => {
@@ -142,12 +133,12 @@
     <div class="scroll-sequence">
       <div class="image-sequence">
         <div class="canvas-container">
-          <canvas
-            id={canvasId}
-            {width}
-            {height}
-            style="background-color: #000;"
-          />
+            <canvas
+              id={canvasId}
+              {width}
+              {height}
+              style="background-color: #000;"
+            />
         </div>
       </div>
     </div>
@@ -184,6 +175,9 @@
     position: relative;
     width: 100%;
     height: 100vh;
+		display: flex;
+		justify-content: center;
+		background-color: #000;
   }
 
   .loading {
@@ -191,5 +185,9 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  #scroll-player {
+    transform: scale(0.8);
   }
 </style>
