@@ -24,6 +24,14 @@ var app = (function () {
     function safe_not_equal(a, b) {
         return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
     }
+    let src_url_equal_anchor;
+    function src_url_equal(element_src, url) {
+        if (!src_url_equal_anchor) {
+            src_url_equal_anchor = document.createElement('a');
+        }
+        src_url_equal_anchor.href = url;
+        return element_src === src_url_equal_anchor.href;
+    }
     function is_empty(obj) {
         return Object.keys(obj).length === 0;
     }
@@ -1371,6 +1379,9 @@ var app = (function () {
     	let t0;
     	let h1;
     	let t1;
+    	let t2;
+    	let img;
+    	let img_src_value;
 
     	const block = {
     		c: function create() {
@@ -1383,24 +1394,31 @@ var app = (function () {
     			t0 = space();
     			h1 = element("h1");
     			t1 = text("加载中");
+    			t2 = space();
+    			img = element("img");
     			attr_dev(canvas_1, "id", canvasId);
     			attr_dev(canvas_1, "width", /*width*/ ctx[1]);
     			attr_dev(canvas_1, "height", /*height*/ ctx[2]);
     			set_style(canvas_1, "background-color", "#000");
-    			add_location(canvas_1, file$1, 131, 6, 3282);
-    			attr_dev(div0, "class", "canvas-container svelte-1q9dstg");
-    			add_location(div0, file$1, 130, 5, 3244);
-    			attr_dev(div1, "class", "image-sequence svelte-1q9dstg");
-    			add_location(div1, file$1, 129, 4, 3209);
-    			attr_dev(div2, "class", "scroll-sequence svelte-1q9dstg");
-    			add_location(div2, file$1, 128, 3, 3174);
+    			add_location(canvas_1, file$1, 144, 10, 3624);
+    			attr_dev(div0, "class", "canvas-container svelte-1e74ng0");
+    			add_location(div0, file$1, 143, 8, 3583);
+    			attr_dev(div1, "class", "image-sequence svelte-1e74ng0");
+    			add_location(div1, file$1, 142, 6, 3546);
+    			attr_dev(div2, "class", "scroll-sequence svelte-1e74ng0");
+    			add_location(div2, file$1, 141, 4, 3510);
     			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
-    			attr_dev(div3, "class", "scroll-player-container svelte-1q9dstg");
-    			add_location(div3, file$1, 127, 2, 3079);
-    			attr_dev(h1, "class", "loading svelte-1q9dstg");
+    			attr_dev(div3, "class", "scroll-player-container svelte-1e74ng0");
+    			add_location(div3, file$1, 137, 2, 3406);
+    			attr_dev(h1, "class", "loading svelte-1e74ng0");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 137, 2, 3411);
-    			add_location(main, file$1, 125, 0, 3068);
+    			add_location(h1, file$1, 155, 2, 3807);
+    			if (!src_url_equal(img.src, img_src_value = "")) attr_dev(img, "src", img_src_value);
+    			attr_dev(img, "id", "imgLoading");
+    			attr_dev(img, "alt", "");
+    			set_style(img, "display", "none");
+    			add_location(img, file$1, 159, 2, 3898);
+    			add_location(main, file$1, 136, 0, 3397);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1415,6 +1433,8 @@ var app = (function () {
     			append_dev(main, t0);
     			append_dev(main, h1);
     			append_dev(h1, t1);
+    			append_dev(main, t2);
+    			append_dev(main, img);
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*flag*/ 1) {
@@ -1443,13 +1463,13 @@ var app = (function () {
     	return block;
     }
 
-    const canvasId = 'scroll-player';
+    const canvasId = "scroll-player";
     const imagesLength = 176; // 图片总数量
 
     function instance$1($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('AppleAnime', slots, []);
-    	let name = 'Anime';
+    	let name = "Anime";
     	const width = document.documentElement.clientWidth;
     	const height = document.documentElement.clientHeight;
     	let flag = false;
@@ -1460,10 +1480,10 @@ var app = (function () {
      */
     	function getImagesPath() {
     		let images = [];
-    		const baseUrl = 'https://www.apple.com.cn/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/06-transparency-head/';
+    		const baseUrl = "https://www.apple.com.cn/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/06-transparency-head/";
 
-    		for (let i = 0; i < imagesLength; i++) {
-    			images.push(`${baseUrl}${numeral(i).format('0000')}.jpg`);
+    		for (let i = 0; i <= imagesLength; i++) {
+    			images.push(`${baseUrl}${numeral(i).format("0000")}.jpg`);
     		}
 
     		return images;
@@ -1471,41 +1491,47 @@ var app = (function () {
 
     	let imagesManager = [];
     	let imagesPath = getImagesPath(); // 图片路径数字集合
+    	let errorPath = [];
     	let canvas;
     	let context;
 
     	/** 加载图片 */
     	function loadImages() {
-    		const loadNextImage = src => {
-    			const img = new Image();
+    		const imgDom = document.querySelector("#imgLoading");
+    		let index = 0;
 
-    			// 同步加载, 可优化为异步
-    			img.onload = e => {
-    				imagesManager.push(img);
+    		const loadNextImage = () => {
+    			const oldIndex = index;
+    			imgDom.src = imagesPath[index];
+
+    			imgDom.onload = e => {
+    				imagesManager[oldIndex] = imgDom.cloneNode();
+    				index++;
 
     				if (imagesManager.length === imagesLength) {
-    					// 代表所有图片加载完成 执行回调方法
     					$$invalidate(0, flag = true);
-
     					imagesLoadComplete();
+    					return;
     				}
+
+    				loadNextImage();
     			};
 
-    			img.src = src;
-    			if (imagesPath.length === 0) return;
-    			loadNextImage(imagesPath.shift());
+    			imgDom.onerror = e => {
+    				loadNextImage();
+    			};
     		};
 
-    		loadNextImage(imagesPath.shift());
+    		loadNextImage();
     	}
 
     	function init() {
-    		boxHeight = document.querySelector('.scroll-player-container').clientHeight - document.documentElement.clientHeight;
+    		boxHeight = document.querySelector(".scroll-player-container").clientHeight - document.documentElement.clientHeight;
     		canvas = document.getElementById(canvasId);
-    		context = canvas.getContext('2d');
+    		context = canvas.getContext("2d");
 
     		// 加入scroll事件监听
-    		document.addEventListener('scroll', handleScroll);
+    		document.addEventListener("scroll", handleScroll);
 
     		// 执行加载每一帧的所有图片
     		loadImages();
@@ -1517,7 +1543,7 @@ var app = (function () {
 
     	/** 图片加载完成回调 */
     	function imagesLoadComplete() {
-    		console.log('游戏 🎮 开始了哟!');
+    		console.log("游戏 🎮 开始了哟!");
     		GameRun();
     	}
 
@@ -1567,7 +1593,7 @@ var app = (function () {
     		scrollIndex = Math.round(document.documentElement.scrollTop / share);
 
     		// console.log('compute', Math.round(boxHeight / imagesLength));
-    		console.log('compute', document.documentElement.scrollTop, Math.round(document.documentElement.scrollTop / share));
+    		console.log("compute", document.documentElement.scrollTop, Math.round(document.documentElement.scrollTop / share));
     	}
 
     	window.onload = () => {
@@ -1592,6 +1618,7 @@ var app = (function () {
     		getImagesPath,
     		imagesManager,
     		imagesPath,
+    		errorPath,
     		canvas,
     		context,
     		loadImages,
@@ -1612,6 +1639,7 @@ var app = (function () {
     		if ('boxHeight' in $$props) boxHeight = $$props.boxHeight;
     		if ('imagesManager' in $$props) imagesManager = $$props.imagesManager;
     		if ('imagesPath' in $$props) imagesPath = $$props.imagesPath;
+    		if ('errorPath' in $$props) errorPath = $$props.errorPath;
     		if ('canvas' in $$props) canvas = $$props.canvas;
     		if ('context' in $$props) context = $$props.context;
     		if ('scrollIndex' in $$props) scrollIndex = $$props.scrollIndex;
