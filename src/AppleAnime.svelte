@@ -107,12 +107,9 @@
   }
 
   function GameRun() {
-		// setTimeout(() => {
-		// 	draw();
-		// }, 0);
-
     raf = window.requestAnimationFrame(draw);
   }
+
 
   /**
    * 处理滑动边界状态
@@ -129,7 +126,6 @@
     if (currentIndex > imagesLength) {
       currentIndex = imagesLength;
     }
-
     raf = window.requestAnimationFrame(draw);
   }
 

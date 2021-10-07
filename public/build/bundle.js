@@ -1380,8 +1380,11 @@ var app = (function () {
     	let h1;
     	let t1;
     	let t2;
-    	let img;
-    	let img_src_value;
+    	let img0;
+    	let img0_src_value;
+    	let t3;
+    	let img1;
+    	let img1_src_value;
 
     	const block = {
     		c: function create() {
@@ -1395,31 +1398,38 @@ var app = (function () {
     			h1 = element("h1");
     			t1 = text("加载中");
     			t2 = space();
-    			img = element("img");
+    			img0 = element("img");
+    			t3 = space();
+    			img1 = element("img");
     			attr_dev(canvas_1, "id", canvasId);
     			attr_dev(canvas_1, "width", width);
     			attr_dev(canvas_1, "height", height);
     			set_style(canvas_1, "background-color", "#000");
     			attr_dev(canvas_1, "class", "svelte-88ask2");
-    			add_location(canvas_1, file$1, 140, 12, 3280);
+    			add_location(canvas_1, file$1, 164, 12, 3831);
     			attr_dev(div0, "class", "canvas-container svelte-88ask2");
-    			add_location(div0, file$1, 139, 8, 3237);
+    			add_location(div0, file$1, 163, 8, 3788);
     			attr_dev(div1, "class", "image-sequence svelte-88ask2");
-    			add_location(div1, file$1, 138, 6, 3200);
+    			add_location(div1, file$1, 162, 6, 3751);
     			attr_dev(div2, "class", "scroll-sequence svelte-88ask2");
-    			add_location(div2, file$1, 137, 4, 3164);
+    			add_location(div2, file$1, 161, 4, 3715);
     			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
     			attr_dev(div3, "class", "scroll-player-container svelte-88ask2");
-    			add_location(div3, file$1, 133, 2, 3060);
+    			add_location(div3, file$1, 157, 2, 3611);
     			attr_dev(h1, "class", "loading svelte-88ask2");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 151, 2, 3473);
-    			if (!src_url_equal(img.src, img_src_value = "")) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "id", "imgLoading");
-    			attr_dev(img, "alt", "");
-    			set_style(img, "display", "none");
-    			add_location(img, file$1, 155, 2, 3564);
-    			add_location(main, file$1, 132, 0, 3051);
+    			add_location(h1, file$1, 175, 2, 4024);
+    			if (!src_url_equal(img0.src, img0_src_value = "")) attr_dev(img0, "src", img0_src_value);
+    			attr_dev(img0, "id", "imgLoading");
+    			attr_dev(img0, "alt", "");
+    			set_style(img0, "display", "none");
+    			add_location(img0, file$1, 179, 2, 4115);
+    			if (!src_url_equal(img1.src, img1_src_value = "")) attr_dev(img1, "src", img1_src_value);
+    			attr_dev(img1, "id", "imgHalfLoading");
+    			attr_dev(img1, "alt", "");
+    			set_style(img1, "display", "none");
+    			add_location(img1, file$1, 180, 2, 4178);
+    			add_location(main, file$1, 156, 0, 3602);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1435,7 +1445,9 @@ var app = (function () {
     			append_dev(main, h1);
     			append_dev(h1, t1);
     			append_dev(main, t2);
-    			append_dev(main, img);
+    			append_dev(main, img0);
+    			append_dev(main, t3);
+    			append_dev(main, img1);
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*flag*/ 1) {
@@ -1492,16 +1504,17 @@ var app = (function () {
 
     	let imagesManager = [];
     	let imagesPath = getImagesPath(); // 图片路径数字集合
+    	let halfPath = imagesPath.splice(0, 88);
     	let canvas;
     	let context;
 
     	/** 加载图片 */
-    	function loadImages() {
+    	async function loadImages() {
     		const imgDom = document.querySelector("#imgLoading");
     		let index = 0;
 
     		const loadNextImage = () => {
-    			const oldIndex = index;
+    			const oldIndex = index + 88;
     			imgDom.src = imagesPath[index];
 
     			imgDom.onload = e => {
@@ -1509,6 +1522,35 @@ var app = (function () {
     				index++;
 
     				if (imagesManager.length === imagesLength) {
+    					$$invalidate(0, flag = true);
+    					imagesLoadComplete();
+    					return;
+    				}
+
+    				loadNextImage();
+    			};
+
+    			imgDom.onerror = e => {
+    				loadNextImage();
+    			};
+    		};
+
+    		loadNextImage();
+    	}
+
+    	async function loadHalfImages() {
+    		const imgDom = document.querySelector("#imgHalfLoading");
+    		let index = 0;
+
+    		const loadNextImage = () => {
+    			const oldIndex = index;
+    			imgDom.src = halfPath[index];
+
+    			imgDom.onload = e => {
+    				imagesManager[oldIndex] = imgDom.cloneNode();
+    				index++;
+
+    				if (index >= 88) {
     					$$invalidate(0, flag = true);
     					imagesLoadComplete();
     					return;
@@ -1534,6 +1576,8 @@ var app = (function () {
     		document.addEventListener("scroll", handleScroll);
 
     		// 执行加载每一帧的所有图片
+    		loadHalfImages();
+
     		loadImages();
     	}
 
@@ -1548,9 +1592,6 @@ var app = (function () {
     	}
 
     	function GameRun() {
-    		// setTimeout(() => {
-    		// 	draw();
-    		// }, 0);
     		raf = window.requestAnimationFrame(draw);
     	}
 
@@ -1558,7 +1599,6 @@ var app = (function () {
      * 处理滑动边界状态
      */
     	function draw(timestamp) {
-    		// console.log('这是什么', timestamp);
     		if (currentIndex <= scrollIndex) {
     			drawImages(imagesManager[currentIndex]);
     			currentIndex + 1 < scrollIndex && currentIndex++;
@@ -1618,9 +1658,11 @@ var app = (function () {
     		getImagesPath,
     		imagesManager,
     		imagesPath,
+    		halfPath,
     		canvas,
     		context,
     		loadImages,
+    		loadHalfImages,
     		init,
     		scrollIndex,
     		currentIndex,
@@ -1638,6 +1680,7 @@ var app = (function () {
     		if ('boxHeight' in $$props) boxHeight = $$props.boxHeight;
     		if ('imagesManager' in $$props) imagesManager = $$props.imagesManager;
     		if ('imagesPath' in $$props) imagesPath = $$props.imagesPath;
+    		if ('halfPath' in $$props) halfPath = $$props.halfPath;
     		if ('canvas' in $$props) canvas = $$props.canvas;
     		if ('context' in $$props) context = $$props.context;
     		if ('scrollIndex' in $$props) scrollIndex = $$props.scrollIndex;
@@ -1754,4 +1797,3 @@ var app = (function () {
     return app;
 
 })();
-//# sourceMappingURL=bundle.js.map
