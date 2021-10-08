@@ -89,8 +89,10 @@
       document.documentElement.clientHeight;
     canvas = document.getElementById(canvasId);
     context = canvas.getContext("2d");
+    // 添加滚轮事件
+    document.addEventListener("wheel", wheelhandle);
     // 加入scroll事件监听
-    document.addEventListener("scroll", handleScroll);
+    // document.addEventListener("scroll", handleScroll);
     // 执行加载每一帧的所有图片
 		loadHalfImages();
     loadImages();
@@ -116,16 +118,17 @@
    */
   function draw(timestamp) {
     if (currentIndex <= scrollIndex) {
-      drawImages(imagesManager[currentIndex]);
-      currentIndex + 1 < scrollIndex && currentIndex++;
+      currentIndex++;
     } else if (currentIndex >= scrollIndex) {
-      drawImages(imagesManager[currentIndex]);
-      currentIndex - 1 > scrollIndex && currentIndex--;
+      currentIndex--;
     }
 
-    if (currentIndex > imagesLength) {
-      currentIndex = imagesLength;
-    }
+    if (currentIndex < 0) { currentIndex = 0; }
+
+    if (currentIndex >= imagesLength) { currentIndex = imagesLength - 1; }
+
+    drawImages(imagesManager[currentIndex]);
+
     raf = window.requestAnimationFrame(draw);
   }
 
@@ -146,7 +149,20 @@
     let share = boxHeight / imagesLength;
     // 根据滚动距离, 等比例算出应该滚动到第几张图
     scrollIndex = Math.round(scrollTop / share);
-    console.log("compute", scrollTop, Math.round(scrollTop / share));
+    // console.log("compute", scrollTop, Math.round(scrollTop / share));
+  }
+
+    /** 滚轮事件 */
+  function wheelhandle(e) {
+    const dY = e.deltaY;
+
+    if (currentIndex < 0) { return currentIndex = 0; }
+
+    if (currentIndex >= imagesLength) { return currentIndex = imagesLength - 1; }
+
+    scrollIndex = dY + currentIndex;
+
+    console.log('是怎么样的事件对象呢', e.deltaY);
   }
 
   window.onload = () => {

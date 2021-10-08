@@ -1406,30 +1406,30 @@ var app = (function () {
     			attr_dev(canvas_1, "height", height);
     			set_style(canvas_1, "background-color", "#000");
     			attr_dev(canvas_1, "class", "svelte-88ask2");
-    			add_location(canvas_1, file$1, 164, 12, 3831);
+    			add_location(canvas_1, file$1, 180, 12, 4126);
     			attr_dev(div0, "class", "canvas-container svelte-88ask2");
-    			add_location(div0, file$1, 163, 8, 3788);
+    			add_location(div0, file$1, 179, 8, 4083);
     			attr_dev(div1, "class", "image-sequence svelte-88ask2");
-    			add_location(div1, file$1, 162, 6, 3751);
+    			add_location(div1, file$1, 178, 6, 4046);
     			attr_dev(div2, "class", "scroll-sequence svelte-88ask2");
-    			add_location(div2, file$1, 161, 4, 3715);
+    			add_location(div2, file$1, 177, 4, 4010);
     			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
     			attr_dev(div3, "class", "scroll-player-container svelte-88ask2");
-    			add_location(div3, file$1, 157, 2, 3611);
+    			add_location(div3, file$1, 173, 2, 3906);
     			attr_dev(h1, "class", "loading svelte-88ask2");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 175, 2, 4024);
+    			add_location(h1, file$1, 191, 2, 4319);
     			if (!src_url_equal(img0.src, img0_src_value = "")) attr_dev(img0, "src", img0_src_value);
     			attr_dev(img0, "id", "imgLoading");
     			attr_dev(img0, "alt", "");
     			set_style(img0, "display", "none");
-    			add_location(img0, file$1, 179, 2, 4115);
+    			add_location(img0, file$1, 195, 2, 4410);
     			if (!src_url_equal(img1.src, img1_src_value = "")) attr_dev(img1, "src", img1_src_value);
     			attr_dev(img1, "id", "imgHalfLoading");
     			attr_dev(img1, "alt", "");
     			set_style(img1, "display", "none");
-    			add_location(img1, file$1, 180, 2, 4178);
-    			add_location(main, file$1, 156, 0, 3602);
+    			add_location(img1, file$1, 196, 2, 4473);
+    			add_location(main, file$1, 172, 0, 3897);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1572,9 +1572,11 @@ var app = (function () {
     		canvas = document.getElementById(canvasId);
     		context = canvas.getContext("2d");
 
-    		// 加入scroll事件监听
-    		document.addEventListener("scroll", handleScroll);
+    		// 添加滚轮事件
+    		document.addEventListener("wheel", wheelhandle);
 
+    		// 加入scroll事件监听
+    		// document.addEventListener("scroll", handleScroll);
     		// 执行加载每一帧的所有图片
     		loadHalfImages();
 
@@ -1600,17 +1602,20 @@ var app = (function () {
      */
     	function draw(timestamp) {
     		if (currentIndex <= scrollIndex) {
-    			drawImages(imagesManager[currentIndex]);
-    			currentIndex + 1 < scrollIndex && currentIndex++;
+    			currentIndex++;
     		} else if (currentIndex >= scrollIndex) {
-    			drawImages(imagesManager[currentIndex]);
-    			currentIndex - 1 > scrollIndex && currentIndex--;
+    			currentIndex--;
     		}
 
-    		if (currentIndex > imagesLength) {
-    			currentIndex = imagesLength;
+    		if (currentIndex < 0) {
+    			currentIndex = 0;
     		}
 
+    		if (currentIndex >= imagesLength) {
+    			currentIndex = imagesLength - 1;
+    		}
+
+    		drawImages(imagesManager[currentIndex]);
     		raf = window.requestAnimationFrame(draw);
     	}
 
@@ -1632,8 +1637,22 @@ var app = (function () {
 
     		// 根据滚动距离, 等比例算出应该滚动到第几张图
     		scrollIndex = Math.round(scrollTop / share);
+    	} // console.log("compute", scrollTop, Math.round(scrollTop / share));
 
-    		console.log("compute", scrollTop, Math.round(scrollTop / share));
+    	/** 滚轮事件 */
+    	function wheelhandle(e) {
+    		const dY = e.deltaY;
+
+    		if (currentIndex < 0) {
+    			return currentIndex = 0;
+    		}
+
+    		if (currentIndex >= imagesLength) {
+    			return currentIndex = imagesLength - 1;
+    		}
+
+    		scrollIndex = dY + currentIndex;
+    		console.log('是怎么样的事件对象呢', e.deltaY);
     	}
 
     	window.onload = () => {
@@ -1671,7 +1690,8 @@ var app = (function () {
     		GameRun,
     		draw,
     		drawImages,
-    		handleScroll
+    		handleScroll,
+    		wheelhandle
     	});
 
     	$$self.$inject_state = $$props => {
