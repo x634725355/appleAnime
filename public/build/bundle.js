@@ -1573,10 +1573,10 @@ var app = (function () {
     		context = canvas.getContext("2d");
 
     		// 添加滚轮事件
-    		document.addEventListener("wheel", wheelhandle);
-
+    		// document.addEventListener("wheel", wheelhandle);
     		// 加入scroll事件监听
-    		// document.addEventListener("scroll", handleScroll);
+    		document.addEventListener("scroll", handleScroll);
+
     		// 执行加载每一帧的所有图片
     		loadHalfImages();
 
