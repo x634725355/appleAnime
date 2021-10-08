@@ -1,13 +1,11 @@
 <script>
   import numeral from "numeral";
 
-  let name = "Anime";
   const width = 1458;
   const height = 820;
   const canvasId = "scroll-player";
   const imagesLength = 176; // 图片总数量
   let flag = false;
-  let boxHeight;
 
   /**
    * 获取图片路径
@@ -84,9 +82,6 @@
   }
 
   function init() {
-    boxHeight =
-      document.querySelector(".scroll-player-container").clientHeight -
-      document.documentElement.clientHeight;
     canvas = document.getElementById(canvasId);
     context = canvas.getContext("2d");
     // 添加滚轮事件
@@ -162,7 +157,7 @@
 
     scrollIndex = dY + currentIndex;
 
-    console.log('是怎么样的事件对象呢', e.deltaY);
+    // console.log('是怎么样的事件对象呢', e.deltaY);
   }
 
   window.onload = () => {
@@ -171,22 +166,14 @@
 </script>
 
 <main>
-  <div
-    style="visibility: {flag ? 'visible' : 'hidden'};"
-    class="scroll-player-container"
-  >
-    <div class="scroll-sequence">
-      <div class="image-sequence">
-        <div class="canvas-container">
-            <canvas
-              id={canvasId}
-              {width}
-              {height}
-              style="background-color: #000;"
-            />
-        </div>
-      </div>
-    </div>
+
+  <div style="visibility: {flag ? 'visible' : 'hidden'};" class="canvas-container">
+    <canvas
+      id={canvasId}
+      {width}
+      {height}
+      style="background-color: #000;"
+    />
   </div>
 
   <h1 class="loading" style="visibility: {flag ? 'hidden' : 'visible'};">
@@ -198,25 +185,6 @@
 </main>
 
 <style>
-  .scroll-player-container {
-    height: 500vh;
-    width: 100%;
-    position: relative;
-  }
-
-  .scroll-sequence {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .image-sequence {
-    position: sticky;
-    top: 0;
-    overflow: hidden;
-  }
-
   .canvas-container {
     position: relative;
     width: 100%;

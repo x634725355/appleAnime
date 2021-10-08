@@ -1371,10 +1371,7 @@ var app = (function () {
 
     function create_fragment$1(ctx) {
     	let main;
-    	let div3;
-    	let div2;
-    	let div1;
-    	let div0;
+    	let div;
     	let canvas_1;
     	let t0;
     	let h1;
@@ -1389,10 +1386,7 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			main = element("main");
-    			div3 = element("div");
-    			div2 = element("div");
-    			div1 = element("div");
-    			div0 = element("div");
+    			div = element("div");
     			canvas_1 = element("canvas");
     			t0 = space();
     			h1 = element("h1");
@@ -1405,42 +1399,33 @@ var app = (function () {
     			attr_dev(canvas_1, "width", width);
     			attr_dev(canvas_1, "height", height);
     			set_style(canvas_1, "background-color", "#000");
-    			attr_dev(canvas_1, "class", "svelte-88ask2");
-    			add_location(canvas_1, file$1, 180, 12, 4126);
-    			attr_dev(div0, "class", "canvas-container svelte-88ask2");
-    			add_location(div0, file$1, 179, 8, 4083);
-    			attr_dev(div1, "class", "image-sequence svelte-88ask2");
-    			add_location(div1, file$1, 178, 6, 4046);
-    			attr_dev(div2, "class", "scroll-sequence svelte-88ask2");
-    			add_location(div2, file$1, 177, 4, 4010);
-    			set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
-    			attr_dev(div3, "class", "scroll-player-container svelte-88ask2");
-    			add_location(div3, file$1, 173, 2, 3906);
-    			attr_dev(h1, "class", "loading svelte-88ask2");
+    			attr_dev(canvas_1, "class", "svelte-213t5l");
+    			add_location(canvas_1, file$1, 170, 4, 3824);
+    			set_style(div, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
+    			attr_dev(div, "class", "canvas-container svelte-213t5l");
+    			add_location(div, file$1, 169, 2, 3738);
+    			attr_dev(h1, "class", "loading svelte-213t5l");
     			set_style(h1, "visibility", /*flag*/ ctx[0] ? 'hidden' : 'visible');
-    			add_location(h1, file$1, 191, 2, 4319);
+    			add_location(h1, file$1, 178, 2, 3938);
     			if (!src_url_equal(img0.src, img0_src_value = "")) attr_dev(img0, "src", img0_src_value);
     			attr_dev(img0, "id", "imgLoading");
     			attr_dev(img0, "alt", "");
     			set_style(img0, "display", "none");
-    			add_location(img0, file$1, 195, 2, 4410);
+    			add_location(img0, file$1, 182, 2, 4029);
     			if (!src_url_equal(img1.src, img1_src_value = "")) attr_dev(img1, "src", img1_src_value);
     			attr_dev(img1, "id", "imgHalfLoading");
     			attr_dev(img1, "alt", "");
     			set_style(img1, "display", "none");
-    			add_location(img1, file$1, 196, 2, 4473);
-    			add_location(main, file$1, 172, 0, 3897);
+    			add_location(img1, file$1, 183, 2, 4092);
+    			add_location(main, file$1, 167, 0, 3728);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, main, anchor);
-    			append_dev(main, div3);
-    			append_dev(div3, div2);
-    			append_dev(div2, div1);
-    			append_dev(div1, div0);
-    			append_dev(div0, canvas_1);
+    			append_dev(main, div);
+    			append_dev(div, canvas_1);
     			append_dev(main, t0);
     			append_dev(main, h1);
     			append_dev(h1, t1);
@@ -1451,7 +1436,7 @@ var app = (function () {
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*flag*/ 1) {
-    				set_style(div3, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
+    				set_style(div, "visibility", /*flag*/ ctx[0] ? 'visible' : 'hidden');
     			}
 
     			if (dirty & /*flag*/ 1) {
@@ -1484,9 +1469,7 @@ var app = (function () {
     function instance$1($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('AppleAnime', slots, []);
-    	let name = "Anime";
     	let flag = false;
-    	let boxHeight;
 
     	/**
      * 获取图片路径
@@ -1568,7 +1551,6 @@ var app = (function () {
     	}
 
     	function init() {
-    		boxHeight = document.querySelector(".scroll-player-container").clientHeight - document.documentElement.clientHeight;
     		canvas = document.getElementById(canvasId);
     		context = canvas.getContext("2d");
 
@@ -1652,8 +1634,7 @@ var app = (function () {
     		}
 
     		scrollIndex = dY + currentIndex;
-    		console.log('是怎么样的事件对象呢', e.deltaY);
-    	}
+    	} // console.log('是怎么样的事件对象呢', e.deltaY);
 
     	window.onload = () => {
     		init();
@@ -1667,13 +1648,11 @@ var app = (function () {
 
     	$$self.$capture_state = () => ({
     		numeral,
-    		name,
     		width,
     		height,
     		canvasId,
     		imagesLength,
     		flag,
-    		boxHeight,
     		getImagesPath,
     		imagesManager,
     		imagesPath,
@@ -1695,9 +1674,7 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('name' in $$props) name = $$props.name;
     		if ('flag' in $$props) $$invalidate(0, flag = $$props.flag);
-    		if ('boxHeight' in $$props) boxHeight = $$props.boxHeight;
     		if ('imagesManager' in $$props) imagesManager = $$props.imagesManager;
     		if ('imagesPath' in $$props) imagesPath = $$props.imagesPath;
     		if ('halfPath' in $$props) halfPath = $$props.halfPath;
